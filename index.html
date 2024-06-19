@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laundry Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2e3b4e;
+            color: white;
+            padding: 20px;
+            height: 100vh;
+            position: fixed;
+        }
+
+        .sidebar .logo {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 15px 0;
+            cursor: pointer;
+        }
+
+        .sidebar ul li:hover {
+            background-color: #1d2a3a;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .header .overview {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .header .card {
+            background-color: #f0f1f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 10px;
+            flex: 1;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+        }
+
+        .header .card h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .header .card p {
+            margin: 10px 0 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .charts-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .chart-wrapper {
+            flex: 1;
+            min-width: 300px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="logo">Panze</div>
+    <ul>
+        <li>Dashboard</li>
+        <li>Parties</li>
+        <li>Product Manager</li>
+        <li>Sales</li>
+        <li>Purchases</li>
+        <li>Stock Transfer</li>
+        <li>POS</li>
+        <li>Cash & Bank</li>
+        <li>Expenses</li>
+        <li>Staff Members</li>
+        <li>Sales Reports</li>
+        <li>Online Orders</li>
+        <li>Settings</li>
+        <li>Subscription</li>
+        <li>Logout</li>
+    </ul>
+</div>
+<div class="main-content">
+    <div class="header">
+        <div class="overview">
+            <div class="card">
+                <h3>Total Sales</h3>
+                <p>$12,345</p>
+            </div>
+            <div class="card">
+                <h3>Todays Delivery</h3>
+				<p>9</p>
+            </div>
+            <div class="card">
+                <h3>Today's Orders</h3>
+                <p>5</p>
+            </div>
+            <div class="card">
+                <h3>Payment Received</h3>
+                <p>$72,840</p>
+            </div>
+            <div class="card">
+                <h3>Total Orders</h3>
+                <p>123</p>
+            </div>
+            <div class="card">
+                <h3>Pending Orders</h3>
+                <p>45</p>
+            </div>
+            <div class="card">
+                <h3>Completed Orders</h3>
+                <p>78</p>
+            </div>
+            <div class="card">
+                <h3>Today's Orders</h3>
+                <p>12</p>
+            </div>
+        </div>
+    </div>
+    <div class="charts-container">
+        <div class="chart-wrapper">
+            <canvas id="salesChart" style="width:100%;max-width:600px"></canvas>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="ordersChart" style="width:100%;max-width:600px"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+var xValues = ["January", "February", "March", "April", "May", "June", "July"];
+var ySalesValues = [1200, 1500, 1800, 2200, 2500, 2800, 3000];
+var yOrdersValues = [30, 40, 35, 50, 55, 60, 70];
+var barColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40", "#FF6384"];
+
+new Chart("salesChart", {
+    type: "bar",
+    data: {
+        labels: xValues,
+        datasets: [{
+            backgroundColor: barColors,
+            data: ySalesValues
+        }]
+    },
+    options: {
+        legend: { display: false },
+        title: {
+            display: true,
+            text: "Sales Per Month"
+        }
+    }
+});
+
+new Chart("ordersChart", {
+    type: "bar",
+    data: {
+        labels: xValues,
+        datasets: [{
+            backgroundColor: barColors,
+            data: yOrdersValues
+        }]
+    },
+    options: {
+        legend: { display: false },
+        title: {
+            display: true,
+            text: "Orders Per Month"
+        }
+    }
+});
+</script>
+
+</body>
+</html>
