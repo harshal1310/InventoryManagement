@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laundry Management System - Shopkeeper</title>
+    <link rel="stylesheet" href="customer.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Laundry Management System</h2>
+            <ul>
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="customers.html">Customers</a></li>
+                <li><a href="#">Garments</a></li>
+                <li><a href="order.html">Order</a></li>
+                <li><a href="#">Reports</a></li>
+                <li><a href="settings.html">Settings</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <header class="header">
+                <h1>Customer Tracking</h1>
+            </header>
+            <section class="customer-section">
+                <div class="customer-actions">
+                    <input type="text" id="search-input" placeholder="Search customers...">
+                    <button class="btn">Search</button>
+                </div>
+                <div class="customer-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Customer ID</th>
+                                <th>Name</th>
+                                <th>Mobile</th>
+                                <th>Email</th>
+                                <th>Total Orders</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customer-list">
+                            <!-- Customer rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="customer.js"></script>
+</body>
+</html>

@@ -4,117 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laundry Management System</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
     <style>
-        body {
-            display: flex;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        .sidebar {
-            width: 250px;
-            background-color: #2e3b4e;
-            color: white;
-            padding: 20px;
-            height: 100vh;
-            position: fixed;
-        }
-
-        .sidebar .logo {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .sidebar ul li {
-            margin: 15px 0;
-            cursor: pointer;
-        }
-
-        .sidebar ul li:hover {
-            background-color: #1d2a3a;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-            width: 100%;
-        }
-
-        .header .overview {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-
-        .header .card {
-            background-color: #f0f1f5;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 10px;
-            flex: 1;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            min-width: 200px;
-        }
-
-        .header .card h3 {
-            margin: 0;
-            font-size: 18px;
-            color: #333;
-        }
-
-        .header .card p {
-            margin: 10px 0 0;
-            font-size: 24px;
-            font-weight: bold;
-            color: #666;
-        }
-
-        .charts-container {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .chart-wrapper {
-            flex: 1;
-            min-width: 300px;
-            margin: 10px;
-        }
+  
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <div class="logo">Panze</div>
+<aside class="sidebar">
+    <h2>SUPER Laundry</h2>
     <ul>
-        <li>Dashboard</li>
-        <li>Parties</li>
-        <li>Product Manager</li>
-        <li>Sales</li>
-        <li>Purchases</li>
-        <li>Stock Transfer</li>
-        <li>POS</li>
-        <li>Cash & Bank</li>
-        <li>Expenses</li>
-        <li>Staff Members</li>
-        <li>Sales Reports</li>
-        <li>Online Orders</li>
-        <li>Settings</li>
-        <li>Subscription</li>
-        <li>Logout</li>
+        <li><a href="index.html">Dashboard</a></li>
+        <li><a href="customers.html">Customers</a></li>
+        <li><a href="#">Garments</a></li>
+        <li><a href="order.html">Order</a></li>
+        <li><a href="#">Reports</a></li>
+        <li><a href="settings.html">Settings</a></li>
     </ul>
-</div>
+</aside>
+
 <div class="main-content">
     <div class="header">
         <div class="overview">
@@ -124,7 +33,7 @@
             </div>
             <div class="card">
                 <h3>Todays Delivery</h3>
-				<p>9</p>
+                <p>9</p>
             </div>
             <div class="card">
                 <h3>Today's Orders</h3>
@@ -160,49 +69,95 @@
             <canvas id="ordersChart" style="width:100%;max-width:600px"></canvas>
         </div>
     </div>
+    <div class="invoices-table">
+        <h3>Last 10 Invoices</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Invoice #</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>INV001</td>
+                    <td>John Doe</td>
+                    <td>2023-06-10</td>
+                    <td>$250</td>
+                    <td>Paid</td>
+                </tr>
+                <tr>
+                    <td>INV002</td>
+                    <td>Jane Smith</td>
+                    <td>2023-06-09</td>
+                    <td>$180</td>
+                    <td>Pending</td>
+                </tr>
+                <tr>
+                    <td>INV003</td>
+                    <td>Bob Johnson</td>
+                    <td>2023-06-08</td>
+                    <td>$320</td>
+                    <td>Paid</td>
+                </tr>
+                <tr>
+                    <td>INV004</td>
+                    <td>Alice Brown</td>
+                    <td>2023-06-07</td>
+                    <td>$150</td>
+                    <td>Paid</td>
+                </tr>
+                <tr>
+                    <td>INV005</td>
+                    <td>Michael Lee</td>
+                    <td>2023-06-06</td>
+                    <td>$400</td>
+                    <td>Pending</td>
+                </tr>
+                <tr>
+                    <td>INV006</td>
+                    <td>Linda Taylor</td>
+                    <td>2023-06-05</td>
+                    <td>$275</td>
+                    <td>Paid</td>
+                </tr>
+                <tr>
+                    <td>INV007</td>
+                    <td>James Wilson</td>
+                    <td>2023-06-04</td>
+                    <td>$350</td>
+                    <td>Pending</td>
+                </tr>
+                <tr>
+                    <td>INV008</td>
+                    <td>Patricia Martinez</td>
+                    <td>2023-06-03</td>
+                    <td>$220</td>
+                    <td>Paid</td>
+                </tr>
+                <tr>
+                    <td>INV009</td>
+                    <td>David Anderson</td>
+                    <td>2023-06-02</td>
+                    <td>$310</td>
+                    <td>Pending</td>
+                </tr>
+                <tr>
+                    <td>INV010</td>
+                    <td>Sarah Thomas</td>
+                    <td>2023-06-01</td>
+                    <td>$450</td>
+                    <td>Paid</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<script>
-var xValues = ["January", "February", "March", "April", "May", "June", "July"];
-var ySalesValues = [1200, 1500, 1800, 2200, 2500, 2800, 3000];
-var yOrdersValues = [30, 40, 35, 50, 55, 60, 70];
-var barColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40", "#FF6384"];
-
-new Chart("salesChart", {
-    type: "bar",
-    data: {
-        labels: xValues,
-        datasets: [{
-            backgroundColor: barColors,
-            data: ySalesValues
-        }]
-    },
-    options: {
-        legend: { display: false },
-        title: {
-            display: true,
-            text: "Sales Per Month"
-        }
-    }
-});
-
-new Chart("ordersChart", {
-    type: "bar",
-    data: {
-        labels: xValues,
-        datasets: [{
-            backgroundColor: barColors,
-            data: yOrdersValues
-        }]
-    },
-    options: {
-        legend: { display: false },
-        title: {
-            display: true,
-            text: "Orders Per Month"
-        }
-    }
-});
+<script src="dashboard.js">
 </script>
 
 </body>

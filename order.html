@@ -5,18 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laundry Management System</title>
     <link rel="stylesheet" href="order.css">
+    <style>
+        /* Additional styles for modal and form */
+       
+    </style>
 </head>
 <body>
     <div class="container">
         <aside class="sidebar">
             <h2>SUPER Laundry</h2>
             <ul>
-                <li><a href="#">Dashboard</a></li>
-                <li><a href="#">Master</a></li>
-                <li><a href="#">Garments</a></li>
-                <li><a href="#">Order</a></li>
-                <li><a href="#">Reports</a></li>
-                <li><a href="#">Settings</a></li>
+                 <li><a href="index.html">Dashboard</a></li>
+				<li><a href="customers.html">Customers</a></li>
+				<li><a href="#">Garments</a></li>
+				<li><a href="order.html">Order</a></li>
+				<li><a href="#">Reports</a></li>
+				<li><a href="settings.html">Settings</a></li>
+    
             </ul>
         </aside>
         <main class="main-content">
@@ -25,9 +30,8 @@
             </header>
             <section class="order-section">
                 <div class="order-actions">
-                    <button class="btn delete-btn">Delete</button>
-                    <button class="btn new-order-btn">+ New Order BY Quantity</button>
-                    <button class="btn new-order-btn">+ New Order BY Weight</button>
+                    <!-- Add Order button to trigger modal -->
+                    <button class="btn new-order-btn" id="addOrderBtn">Add Order</button>
                 </div>
                 <div class="order-filter">
                     <div class="search-filter">
@@ -52,16 +56,11 @@
                             <tr>
                                 <th>Sr. No.</th>
                                 <th>Inv No</th>
-                                <th>Br No</th>
-                                <th>Br Name</th>
-                                <th>Customer Name</th>
-                                <th>Mobile</th>
                                 <th>Order Date</th>
                                 <th>Due Date</th>
                                 <th>Order Status</th>
                                 <th>Qty Wt</th>
                                 <th>Amt</th>
-                                <th>Pay</th>
                                 <th>Status</th>
                                 <th>Action</th>
                                 <!-- New header for invoice creation -->
@@ -72,15 +71,10 @@
                             <tr>
                                 <td>1</td>
                                 <td>A111</td>
-                                <td>BR1222</td>
-                                <td>Main Location</td>
-                                <td>Kamal Soni</td>
-                                <td>9428066222</td>
                                 <td>02-05-2022</td>
                                 <td>02-05-2022</td>
                                 <td>neworder</td>
                                 <td>Qty: 18 KG</td>
-                                <td>1143</td>
                                 <td>1143</td>
                                 <td><span class="status unpaid">unpaid</span></td>
                                 <td><button class="btn action-btn">Action</button></td>
@@ -95,6 +89,150 @@
             </section>
         </main>
     </div>
+
+    <!-- Modal -->
+    <div id="addOrderModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Add New Order</h2>
+            <!-- Form for adding a new order -->
+            <form id="newOrderForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="customer">Customer:</label>
+                        <input type="text" id="customer" name="customer" value="Austin Bailey">
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile">Mobile:</label>
+                        <input type="tel" id="mobile" name="mobile" value="9428066222">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="branch">Branch:</label>
+                        <select id="branch" name="branch">
+                            <option value="Main Location" selected>Main Location</option>
+                            <option value="Branch A">Branch A</option>
+                            <option value="Branch B">Branch B</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="service">Service:</label>
+                        <select id="service" name="service">
+                            <option value="Dry Cleaning" selected>Dry Cleaning</option>
+                            <option value="Washing">Washing</option>
+                            <option value="Ironing">Ironing</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dueDate">Due Date:</label>
+                        <input type="date" id="dueDate" name="dueDate">
+                    </div>
+                </div>
+                <div class="order-details">
+                    <h3>Order Details</h3>
+                    <div id="productRows">
+                        <!-- Product rows will be dynamically added here -->
+                    </div>
+                    <button type="button" class="add-product-btn" onclick="addNewProductRow()">Add New Item</button>
+                </div>
+                <div class="pickup-delivery">
+                    <h3>Pickup & Delivery</h3>
+                    <div class="pickup-row">
+                        <label for="pickupType">Pickup Type:</label>
+                        <select id="pickupType">
+                            <option value="Door Pickup" selected>Door Pickup</option>
+                            <option value="In-Store Pickup">In-Store Pickup</option>
+                        </select>
+                    </div>
+                    <div class="delivery-row">
+                        <label for="deliveryType">Delivery Type:</label>
+                        <select id="deliveryType">
+                            <option value="Door Delivery" selected>Door Delivery</option>
+                            <option value="In-Store Pickup">In-Store Pickup</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="charges">
+                    <h3>Charges</h3>
+                    <div class="charge-row">
+                        <label for="subtotal">Subtotal:</label>
+                        <input type="number" id="subtotal" value="18.80">
+                    </div>
+                    <div class="charge-row">
+                        <label for="tax">Tax Amount:</label>
+                        <input type="number" id="tax" value="1.32">
+                    </div>
+                    <div class="charge-row">
+                        <label for="total">Total Amount:</label>
+                        <input type="number" id="total" value="20.12">
+                    </div>
+                    <div class="charge-row">
+                        <label for="pickup">Pickup Charge:</label>
+                        <input type="number" id="pickup" value="50">
+                    </div>
+                    <div class="charge-row">
+                        <label for="delivery">Delivery Charge:</label>
+                        <input type="number" id="delivery" value="30">
+                    </div>
+                </div>
+                <button type="submit" class="submit-order-btn">Submit Order</button>
+            </form>
+        </div>
+    </div>
+
     <script src="order.js"></script>
+    <script>
+        // JavaScript to show/hide modal
+        var modal = document.getElementById('addOrderModal');
+        var addOrderBtn = document.getElementById('addOrderBtn');
+
+        addOrderBtn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Function to add new product row dynamically
+        function addNewProductRow() {
+            var productRows = document.getElementById('productRows');
+            var rowCount = productRows.childElementCount + 1;
+
+            var productRow = document.createElement('div');
+            productRow.classList.add('product-row');
+            productRow.innerHTML = `
+                <label for="product${rowCount}">Product:</label>
+                <select id="product${rowCount}">
+                    <option value="Top/Shirt-Silk" selected>Top/Shirt-Silk</option>
+                    <option value="Pants">Pants</option>
+                    <option value="Dress">Dress</option>
+                </select>
+                <label for="quantity${rowCount}">Quantity:</label>
+                <input type="number" id="quantity${rowCount}" value="1">
+                <label for="price${rowCount}">Unit Price:</label>
+                <input type="number" id="price${rowCount}" value="0.00">
+                <label for="amount${rowCount}">Amount:</label>
+                <input type="number" id="amount${rowCount}" value="0.00">
+                <button type="button" class="delete-product-btn" onclick="deleteProductRow(this)">Delete</button>
+            `;
+            productRows.appendChild(productRow);
+        }
+
+        // Function to delete product row
+        function deleteProductRow(button) {
+            var rowToDelete = button.parentNode;
+            rowToDelete.parentNode.removeChild(rowToDelete);
+        }
+    </script>
 </body>
 </html>
