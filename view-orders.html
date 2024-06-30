@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laundry Management System</title>
+    <link rel="stylesheet" href="view-order.css">
+    <style>
+        /* Additional styles for modal and form */
+       
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>SUPER Laundry</h2>
+            <ul>
+                 <li><a href="index.html">Dashboard</a></li>
+				<li><a href="customers.html">Customers</a></li>
+				<li><a href="#">Garments</a></li>
+				<li><a href="order.html">Order</a></li>
+				<li><a href="#">Reports</a></li>
+				<li><a href="settings.html">Settings</a></li>
+    
+            </ul>
+        </aside>
+        <main class="main-content">
+            <header class="header">
+                <h1>View Order</h1>
+            </header>
+            <section class="order-section">
+                <div class="order-actions">
+                </div>
+                <div class="order-filter">
+                    <div class="search-filter">
+                        <input type="text" id="search-input" placeholder="Search...">
+                        <select class="filter-select" id="service-filter">
+                            <option value="">All Services</option>
+                            <option value="neworder">New Order</option>
+                            <option value="processing">Processing</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <label for="from-date">From:</label>
+                    <input type="date" id="from-date">
+                    <label for="to-date">To:</label>
+                    <input type="date" id="to-date">
+                    <button class="btn submit-btn">Submit</button>
+                </div>
+                <div class="order-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sr. No.</th>
+                                <th>Inv No</th>
+                                <th>Order Date</th>
+                                <th>Due Date</th>
+                                <th>Order Status</th>
+                                <th>Qty Wt</th>
+                                <th>Amt</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                                <!-- New header for invoice creation -->
+                                <th class="create-invoice">Create Invoice</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>A111</td>
+                                <td>02-05-2022</td>
+                                <td>02-05-2022</td>
+                                <td>neworder</td>
+                                <td>Qty: 18 KG</td>
+                                <td>1143</td>
+                                <td><span class="status unpaid">unpaid</span></td>
+                                <td><button class="btn action-btn">Action</button></td>
+                                <!-- New column for invoice creation -->
+                                <td class="create-invoice">
+                                    <span class="create-invoice-btn">Create Bill</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    
+
+    <script src="order.js"></script>
+   
+
+    </script>
+</body>
+</html>

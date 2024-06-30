@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Supplier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #2f3b52;
+            color: #ffffff;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+        }
+
+        .sidebar h2 {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar ul li a {
+            color: #ffffff;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            transition: background-color 0.3s;
+            border-radius: 4px;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #3f4a6b;
+        }
+
+        .main-content {
+            margin-left: 200px;
+            flex-grow: 1;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        form input[type="text"], form input[type="number"], form select {
+            padding: 10px;
+            width: calc(50% - 10px);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        form button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+            text-transform: uppercase;
+        }
+
+        table td button {
+            padding: 8px 12px;
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 5px;
+        }
+
+        table td button.editBtn {
+            background-color: #ffc107;
+        }
+
+        table td button:hover {
+            background-color: #c82333;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 60%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+
+        .modal-body {
+            padding-bottom: 20px;
+        }
+
+        .modal-body input,
+        .modal-body select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .modal-footer {
+            text-align: right;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+
+        .modal-footer button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal-footer button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>SUPER Laundry</h2>
+        <ul>
+            <!-- Existing links -->
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="customers.html">Customers</a></li>
+            <li><a href="#">Garments</a></li>
+            <li>
+                Order
+                <div class="submenu">
+                    <a href="create-order.html">Create Order</a>
+                    <a href="view-orders.html">View Orders</a>
+                </div>
+            </li>
+            <li><a href="#">Reports</a></li>
+            <li>
+                Settings
+                <div class="submenu">
+                    <a href="add-user.html">Manage Users</a>
+                    <a href="add-services.html">Manage Services</a>
+                    <a href="add-branch.html">Manage Branches</a>
+                    <a href="add-supplier.html">Manage Suppliers</a> <!-- New link for managing suppliers -->
+                </div>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2>Add Supplier</h2>
+        <!-- Supplier Form -->
+        <form id="supplierForm">
+            <input type="text" id="supplierName" placeholder="Supplier Name" required>
+            <input type="text" id="contactPerson" placeholder="Contact Person" required>
+            <input type="text" id="phoneNumber" placeholder="Phone Number" required>
+            <input type="text" id="email" placeholder="Email Address" required>
+            <input type="text" id="address" placeholder="Address" required>
+            <button type="submit">Add Supplier</button>
+        </form>
+
+        <!-- Supplier Table -->
+        <table id="supplierTable">
+            <thead>
+                <tr>
+                    <th>Supplier Name</th>
+                    <th>Contact Person</th>
+                    <th>Phone Number</th>
+                    <th>Email Address</th>
+                    <th>Address</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dummy data rows -->
+                <tr>
+                    <td>Supplier A</td>
+                    <td>John Doe</td>
+                    <td>1234567890</td>
+                    <td>john.doe@example.com</td>
+                    <td>123 Main St, City</td>
+                    <td>
+                        <button class="editBtn">Edit</button>
+                        <button class="deleteBtn">Delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Supplier B</td>
+                    <td>Jane Smith</td>
+                    <td>9876543210</td>
+                    <td>jane.smith@example.com</td>
+                    <td>456 Elm St, Town</td>
+                    <td>
+                        <button class="editBtn">Edit</button>
+                        <button class="deleteBtn">Delete</button>
+                    </td>
+                </tr>
+                <!-- End dummy data -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for Editing Supplier -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <h2>Edit Supplier Information</h2>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editRowIndex">
+                <input type="text" id="editSupplierName" placeholder="Supplier Name" required>
+                <input type="text" id="editContactPerson" placeholder="Contact Person" required>
+                <input type="text" id="editPhoneNumber" placeholder="Phone Number" required>
+                <input type="text" id="editEmail" placeholder="Email Address" required>
+                <input type="text" id="editAddress" placeholder="Address" required>
+            </div>
+            <div class="modal-footer">
+                <button id="saveChangesBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Code -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('supplierForm');
+            const tableBody = document.querySelector('#supplierTable tbody');
+            const editModal = document.getElementById('editModal');
+            const editSupplierNameInput = document.getElementById('editSupplierName');
+            const editContactPersonInput = document.getElementById('editContactPerson');
+            const editPhoneNumberInput = document.getElementById('editPhoneNumber');
+            const editEmailInput = document.getElementById('editEmail');
+            const editAddressInput = document.getElementById('editAddress');
+            const saveChangesBtn = document.getElementById('saveChangesBtn');
+
+            // Handle form submission for adding a new supplier
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const supplierName = document.getElementById('supplierName').value;
+                const contactPerson = document.getElementById('contactPerson').value;
+                const phoneNumber = document.getElementById('phoneNumber').value;
+                const email = document.getElementById('email').value;
+                const address = document.getElementById('address').value;
+
+                if (supplierName.trim() === '' || contactPerson.trim() === '' || phoneNumber.trim() === '' || email.trim() === '' || address.trim() === '') {
+                    alert('Please fill in all fields.');
+                    return;
+                }
+
+                // Create new row for the table
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${supplierName}</td>
+                    <td>${contactPerson}</td>
+                    <td>${phoneNumber}</td>
+                    <td>${email}</td>
+                    <td>${address}</td>
+                    <td>
+                        <button class="editBtn">Edit</button>
+                        <button class="deleteBtn">Delete</button>
+                    </td>
+                `;
+
+                // Add edit functionality
+                const editBtn = newRow.querySelector('.editBtn');
+                editBtn.addEventListener('click', function() {
+                    editSupplierNameInput.value = supplierName;
+                    editContactPersonInput.value = contactPerson;
+                    editPhoneNumberInput.value = phoneNumber;
+                    editEmailInput.value = email;
+                    editAddressInput.value = address;
+                    editModal.style.display = 'block';
+
+                    // Save changes on modal save button click
+                    saveChangesBtn.onclick = function() {
+                        newRow.querySelector('td:nth-child(1)').textContent = editSupplierNameInput.value;
+                        newRow.querySelector('td:nth-child(2)').textContent = editContactPersonInput.value;
+                        newRow.querySelector('td:nth-child(3)').textContent = editPhoneNumberInput.value;
+                        newRow.querySelector('td:nth-child(4)').textContent = editEmailInput.value;
+                        newRow.querySelector('td:nth-child(5)').textContent = editAddressInput.value;
+                        editModal.style.display = 'none';
+                    };
+
+                    // Store the current row index for saving changes
+                    document.getElementById('editRowIndex').value = newRow.rowIndex;
+                });
+
+                // Add delete functionality
+                const deleteBtn = newRow.querySelector('.deleteBtn');
+                deleteBtn.addEventListener('click', function() {
+                    newRow.remove();
+                });
+
+                // Append the new row to the table
+                tableBody.appendChild(newRow);
+
+                // Clear the form fields
+                form.reset();
+            });
+
+            // Close the modal when clicking outside of it
+            window.onclick = function(event) {
+                if (event.target === editModal) {
+                    editModal.style.display = 'none';
+                }
+            };
+
+            // Close the modal when clicking the close button
+            document.querySelector('.close').onclick = function() {
+                editModal.style.display = 'none';
+            };
+        });
+    </script>
+</body>
+</html>

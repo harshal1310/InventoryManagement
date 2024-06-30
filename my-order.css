@@ -1,0 +1,210 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #2f3b52;
+    color: #ffffff;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: fixed;
+}
+
+.sidebar h2 {
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    flex-grow: 1;
+}
+
+.sidebar ul li {
+    margin: 10px 0;
+}
+
+.sidebar ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    transition: background-color 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #3f4a6b;
+}
+
+.main-content {
+    margin-left: 200px;
+    flex-grow: 1;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.header {
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.order-section {
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.order-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 10px 15px;
+    margin-right: 10px;
+    border: none;
+    cursor: pointer;
+    color: #ffffff;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.delete-btn {
+    background-color: #ff4d4d;
+}
+
+.new-order-btn {
+    background-color: #28a745;
+}
+
+.submit-btn {
+    background-color: #17a2b8;
+}
+
+.order-filter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.order-filter label {
+    margin-right: 10px;
+}
+
+.order-filter input[type="date"] {
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.order-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.order-table th,
+.order-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.order-table th {
+    background-color: #f2f2f2;
+}
+
+.status.unpaid {
+    color: #ff4d4d;
+    font-weight: bold;
+}
+
+.action-btn {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.action-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Styles for invoice column */
+
+
+
+
+
+/* Styles for search box and filter */
+.search-filter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-filter input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+    width: 200px;
+}
+
+.filter-select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #333333;
+    cursor: pointer;
+}
+
+.filter-select option {
+    background-color: #ffffff;
+    color: #333333;
+}
+
+/* New styles for Supplier and Supplier Number columns */
+.order-table th:nth-last-child(3),
+.order-table td:nth-last-child(3),
+.order-table th:nth-last-child(2),
+.order-table td:nth-last-child(2) {
+    width: 150px; /* Adjust width as needed */
+}
+
+.order-table th:nth-last-child(3),
+.order-table th:nth-last-child(2) {
+    background-color: #f2f2f2; /* Background color for headers */
+}
