@@ -1,0 +1,285 @@
+/* order.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    width: 100%;
+}
+
+.header {
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 7px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.order-section {
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.order-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 10px 15px;
+    margin-right: 10px;
+    border: none;
+    cursor: pointer;
+    color: #ffffff;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.delete-btn {
+    background-color: #ff4d4d;
+}
+
+.new-order-btn {
+    background-color: #28a745;
+}
+
+.submit-btn {
+    background-color: #17a2b8;
+}
+
+.order-filter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.order-filter label {
+    margin-right: 10px;
+}
+
+.order-filter input[type="date"] {
+    margin-right: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.order-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.order-table th,
+.order-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.order-table th {
+    background-color: #f2f2f2;
+}
+
+.status.unpaid {
+    color: #ff4d4d;
+    font-weight: bold;
+}
+
+.action-btn {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.action-btn:hover {
+    background-color: #0056b3;
+}
+
+/* New styles for invoice column */
+.order-table th.create-invoice {
+    background-color: #f2f2f2;
+}
+
+.order-table td.create-invoice {
+    position: relative;
+}
+
+.create-invoice-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 5px 10px;
+    border: none;
+    background-color: #28a745;
+    color: #ffffff;
+    border-radius: 4px;
+    cursor: pointer;
+    display: none; /* Hide by default */
+}
+
+.create-invoice-btn:hover {
+    background-color: #218838;
+}
+
+.order-table tr:hover .create-invoice-btn {
+    display: inline-block; /* Show on hover */
+}
+
+/* Styles for search box and filter */
+.search-filter {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-filter input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+    width: 200px;
+}
+
+.filter-select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #333333;
+    cursor: pointer;
+}
+
+.filter-select option {
+    background-color: #ffffff;
+    color: #333333;
+}
+
+
+.modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Prevent scrolling of the background */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 60%; /* Adjusted for better layout */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+            max-height: 80%; /* Set a maximum height for the modal */
+            overflow-y: auto; /* Allow vertical scrolling */
+            border-radius: 8px; /* Rounded corners */
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .order-section {
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .form-group, .product-row, .charge-row, .pickup-row, .delivery-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px; /* Increased space between elements */
+        }
+        .form-group label, .product-row label, .charge-row label, .pickup-row label, .delivery-row label {
+            width: 200px; /* Increased width for better alignment */
+            text-align: right;
+            margin-right: 10px;
+            font-weight: bold; /* Bold labels */
+        }
+        input[type="text"], input[type="number"], select {
+            width: 150px; /* Increased width for inputs */
+            padding: 8px; /* More padding for better UI */
+            margin-left: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc; /* Border for inputs */
+            border-radius: 4px; /* Rounded corners for inputs */
+        }
+        h1, h2, h3 {
+            margin: 0 0 10px 0;
+        }
+        .product-row label, .charge-row label, .pickup-row label, .delivery-row label {
+            flex: 1;
+        }
+        .add-product-btn {
+            margin-left: 210px; /* Adjusted margin */
+            padding: 8px 12px; /* Increased padding */
+            background-color: #2f3b52;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px; /* Rounded corners for button */
+        }
+        .add-product-btn:hover {
+            background-color: #1f2b42;
+        }
+        .submit-order-btn {
+            display: block;
+            margin: 20px auto 0 auto; /* Center the button */
+            padding: 10px 20px; /* Increased padding */
+            background-color: #28a745; /* Green background */
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px; /* Rounded corners */
+            font-size: 16px; /* Larger font size */
+        }
+        .submit-order-btn:hover {
+            background-color: #218838;
+        }
+        /* Additional CSS for horizontal pickup and delivery */
+        .pickup-delivery {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .pickup-row, .delivery-row {
+            margin-bottom: 0; /* Remove bottom margin */
+            flex: 1;
+        }
