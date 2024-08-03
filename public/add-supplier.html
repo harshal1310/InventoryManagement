@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Supplier</title>
+    
+    <link rel="stylesheet" href="css/add-supplier.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+
+    <style>
+        
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>SUPER Laundry</h2>
+        <ul>
+            <!-- Existing links -->
+            <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="customers.html">Customers</a></li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="#">Reports</a></li>
+        <li>
+            <a href="#">Order</a>
+            <div class="submenu">
+                <a href="create-order.html">Create Order</a>
+                <a href="view-orders.html">View Orders</a>
+            </div>
+        </li>
+        <li>
+            <a href="#">Purchase</a>
+            <div class="submenu">
+                <a href="add-supplier.html">Add Supplier</a>
+                <a href="give-order.html">Give Order</a>
+                <a href="myorders.html">My Orders</a>
+            </div>
+        </li>
+        </li>
+    
+        <li>
+            <a href="#">Settings</a>
+            <div class="submenu">
+                <a href="add-user.html">Manage Users</a>
+                <a href="add-services.html">Manage Services</a>
+                <a href="add-branches.html">Manage Branches</a>
+            </div>
+        </li>
+        </li>
+        <li><a href="#">Admin Details</a></li>
+        <li><a href="#">Sigh Out</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2>Add Supplier</h2>
+        <!-- Supplier Form -->
+        <form id="supplierForm">
+            <input type="text" id="supplierName" placeholder="Supplier Name" required>
+            <input type="text" id="contactPerson" placeholder="Contact Person" required>
+            <input type="text" id="phoneNumber" placeholder="Phone Number" required>
+            <input type="text" id="email" placeholder="Email Address" required>
+            <input type="text" id="address" placeholder="Address" required>
+            <button type="submit">Add Supplier</button>
+        </form>
+
+        <!-- Supplier Table -->
+        <table id="supplierTable">
+            <thead>
+                <tr>
+                    <th>Supplier Name</th>
+                    <th>Contact Person</th>
+                    <th>Phone Number</th>
+                    <th>Email Address</th>
+                    <th>Address</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dummy data rows -->
+                <tr>
+                    <td>Supplier A</td>
+                    <td>John Doe</td>
+                    <td>1234567890</td>
+                    <td>john.doe@example.com</td>
+                    <td>123 Main St, City</td>
+                    <td>
+                        <button class="editBtn">Edit</button>
+                        <button class="deleteBtn">Delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Supplier B</td>
+                    <td>Jane Smith</td>
+                    <td>9876543210</td>
+                    <td>jane.smith@example.com</td>
+                    <td>456 Elm St, Town</td>
+                    <td>
+                        <button class="editBtn">Edit</button>
+                        <button class="deleteBtn">Delete</button>
+                    </td>
+                </tr>
+                <!-- End dummy data -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for Editing Supplier -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <h2>Edit Supplier Information</h2>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editRowIndex">
+                <input type="text" id="editSupplierName" placeholder="Supplier Name" required>
+                <input type="text" id="editContactPerson" placeholder="Contact Person" required>
+                <input type="text" id="editPhoneNumber" placeholder="Phone Number" required>
+                <input type="text" id="editEmail" placeholder="Email Address" required>
+                <input type="text" id="editAddress" placeholder="Address" required>
+            </div>
+            <div class="modal-footer">
+                <button id="saveChangesBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Code -->
+   
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('supplierForm');
+    const tableBody = document.querySelector('#supplierTable tbody');
+    const editModal = document.getElementById('editModal');
+    const editSupplierNameInput = document.getElementById('editSupplierName');
+    const editContactPersonInput = document.getElementById('editContactPerson');
+    const editPhoneNumberInput = document.getElementById('editPhoneNumber');
+    const editEmailInput = document.getElementById('editEmail');
+    const editAddressInput = document.getElementById('editAddress');
+    const saveChangesBtn = document.getElementById('saveChangesBtn');
+    let currentRowIndex;
+
+    // Handle form submission for adding a new supplier
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const supplierName = document.getElementById('supplierName').value;
+        const contactPerson = document.getElementById('contactPerson').value;
+        const phoneNumber = document.getElementById('phoneNumber').value;
+        const email = document.getElementById('email').value;
+        const address = document.getElementById('address').value;
+
+        if (supplierName.trim() === '' || contactPerson.trim() === '' || phoneNumber.trim() === '' || email.trim() === '' || address.trim() === '') {
+            alert('Please fill in all fields.');
+            return;
+        }
+
+        // Post request to add supplier
+        fetch('/api/suppliers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ supplierName, contactPerson, phoneNumber, email, address })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${data.supplierName}</td>
+                <td>${data.contactPerson}</td>
+                <td>${data.phoneNumber}</td>
+                <td>${data.email}</td>
+                <td>${data.address}</td>
+                <td>
+                    <button class="editBtn" data-id="${data.id}">Edit</button>
+                    <button class="deleteBtn" data-id="${data.id}">Delete</button>
+                </td>
+            `;
+
+            // Add event listeners for edit and delete buttons
+            newRow.querySelector('.editBtn').addEventListener('click', function() {
+                const id = this.dataset.id;
+                fetch(`/api/suppliers/${id}`)
+                    .then(response => response.json())
+                    .then(supplier => {
+                        editSupplierNameInput.value = supplier.supplierName;
+                        editContactPersonInput.value = supplier.contactPerson;
+                        editPhoneNumberInput.value = supplier.phoneNumber;
+                        editEmailInput.value = supplier.email;
+                        editAddressInput.value = supplier.address;
+                        editModal.style.display = 'block';
+
+                        saveChangesBtn.onclick = function() {
+                            fetch(`/api/suppliers/${id}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    supplierName: editSupplierNameInput.value,
+                                    contactPerson: editContactPersonInput.value,
+                                    phoneNumber: editPhoneNumberInput.value,
+                                    email: editEmailInput.value,
+                                    address: editAddressInput.value
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(updatedSupplier => {
+                                newRow.querySelector('td:nth-child(1)').textContent = updatedSupplier.supplierName;
+                                newRow.querySelector('td:nth-child(2)').textContent = updatedSupplier.contactPerson;
+                                newRow.querySelector('td:nth-child(3)').textContent = updatedSupplier.phoneNumber;
+                                newRow.querySelector('td:nth-child(4)').textContent = updatedSupplier.email;
+                                newRow.querySelector('td:nth-child(5)').textContent = updatedSupplier.address;
+                                editModal.style.display = 'none';
+                            });
+                        };
+
+                        document.getElementById('editRowIndex').value = id;
+                    });
+            });
+
+            newRow.querySelector('.deleteBtn').addEventListener('click', function() {
+                const id = this.dataset.id;
+                fetch(`/api/suppliers/${id}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(() => {
+                        newRow.remove();
+                    });
+            });
+
+            tableBody.appendChild(newRow);
+            form.reset();
+        })
+        .catch(error => console.error('Error adding supplier:', error));
+    });
+
+    // Close the modal when clicking outside of it
+    window.onclick = function(event) {
+        if (event.target === editModal) {
+            editModal.style.display = 'none';
+        }
+    };
+
+    // Close the modal when clicking the close button
+    document.querySelector('.close').onclick = function() {
+        editModal.style.display = 'none';
+    };
+});
+
+    </script>
+</body>
+</html>

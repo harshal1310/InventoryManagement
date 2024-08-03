@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laundry Management System</title>
+    <link rel="stylesheet" href="css/view-order.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>SUPER Laundry</h2>
+            <ul>
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="customers.html">Customers</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="#">Reports</a></li>
+                <li>
+                    <a href="#">Order</a>
+                    <div class="submenu">
+                        <a href="create-order.html">Create Order</a>
+                        <a href="view-orders.html">View Orders</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="#">Purchase1</a>
+                    <div class="submenu">
+                        <a href="add-supplier.html">Add Supplier</a>
+                        <a href="give-order.html">Give Order</a>
+                        <a href="myorders.html">My Orders</a>
+                    </div>
+                </li>
+                <li><a href="settings.html">Settings</a></li>
+                <li>
+                    <a href="#">Settings1</a>
+                    <div class="submenu">
+                        <a href="add-user.html">Manage Users</a>
+                        <a href="add-services.html">Manage Services</a>
+                        <a href="add-branches.html">Manage Branches</a>
+                    </div>
+                </li>
+                <li><a href="#">Admin Details</a></li>
+                <li><a href="#">Sign Out</a></li>
+            </ul>
+            <div style="margin: 20px;">Powered By Company Name</div>
+        </aside>
+        <main class="main-content">
+            <header class="header">
+                <h1>View Order</h1>
+            </header>
+            <section class="order-section">
+                <div class="order-actions"></div>
+                <div class="order-filter">
+                    <div class="search-filter">
+                        <input type="text" id="search-input" placeholder="Search...">
+                        <select class="filter-select" id="service-filter">
+                            <option value="">All Services</option>
+                            <option value="neworder">New Order</option>
+                            <option value="processing">Processing</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <label for="from-date">From:</label>
+                    <input type="date" id="from-date">
+                    <label for="to-date">To:</label>
+                    <input type="date" id="to-date">
+
+                    <div class="form-group">
+                        <label for="branch">Branch:</label>
+                        <select id="branch" name="branch" required></select>
+                        <option> </option>
+                    </div>
+
+
+
+                    <button class="btn submit-btn">Submit</button>
+                </div>
+                <div class="order-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sr. No.</th>
+                                <th>Order No</th>
+                                <th>Order Date</th>
+                                <th>Due Date</th>
+                                <th>Order Status</th>
+                                <th>Qty Wt</th>
+                                <th>Amt</th>
+                                <th>Status</th> <!-- Added Status Column -->
+                                <th> View Details</th>
+                                <th class="create-invoice">Create/View Invoice</th>  <!-- In invoice no pattern: lasttwonoofyear+month+date+series  eg: 240729001 -->
+                            </tr>
+                        </thead>
+                        <tbody id="orders-tbody">
+                            <!-- Data rows will be dynamically inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script >
+
+document.addEventListener('DOMContentLoaded', () => {
+    const ordersTbody = document.getElementById('orders-tbody');
+    fetchBranches()
+
+function fetchBranches() {
+    fetch('/api/branches')
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            populateBranchDropdown(data.branches);
+        })
+        .catch(error => {
+            console.error('Error fetching branches:', error);
+        });
+        function populateBranchDropdown(branches) {
+    const branchSelect = document.getElementById('branch');
+    
+    // Generate the options HTML
+    const options = branches.map(branch => `<option value="${branch}">${branch}</option>`).join('');
+    
+    // Set the innerHTML of the dropdown
+    branchSelect.innerHTML = options;
+    
+    // Set the default selection to the first item
+    if (branches.length > 0) {
+        branchSelect.value = branches[0]; // Set the value of the select element to the first branch
+        fetchOrders(branches[0]); // Fetch orders for the default selection
+    }
+    
+    // Add event listener for change events
+    branchSelect.addEventListener('change', () => {
+        const selectedBranch = branchSelect.value;
+        fetchOrders(selectedBranch);
+    });
+}
+
+}
+
+function fetchOrders(branchName) {
+    console.log(branchName);
+    const encodedBranchName = encodeURIComponent(branchName);
+
+    // Fetch orders from the server
+    fetch(`/api/getOrders?branchName=${encodedBranchName}`)
+        .then(response => response.json())
+        .then(data => {
+            ordersTbody.innerHTML = ''; // Clear any existing data
+            data.forEach((order, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${order.id}</td>
+                    <td>${order.pickup_date}</td>
+                    <td>${order.delivery_date}</td>
+                    <td>${order.service}</td>
+                    <td>Qty: N/A</td> <!-- Placeholder for quantity or weight -->
+                    <td>${order.total_amount}</td>
+                    <td><span class="status ${order.status === 'paid' ? 'paid' : 'unpaid'}">${order.status}</span></td>
+                    <td><a href="order-details.html?id=${order.id}" class="btn action-btn">View Details</a></td>                    <td class="create-invoice">
+                        <span class="create-invoice-btn">Create Bill</span>
+                    </td>
+                `;
+                ordersTbody.appendChild(row);
+            });
+        })
+        .catch(error => console.error('Error fetching orders:', error));
+    }
+});
+
+
+    </script>
+</body>
+</html>

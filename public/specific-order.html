@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laundry Management</title>
+    <link rel="stylesheet" href="create-order.css">
+
+    <style>
+        /* General styling */
+       
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>SUPER Laundry</h2>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="customers.html">Customers</a></li>
+            <li><a href="#">Garments</a></li>
+            <li>
+                <a href="#" id="order-menu">Order</a>
+                <div class="submenu" id="order-submenu">
+                    <a href="tmp.html">Create Order</a>
+                    <a href="view-orders.html">View Orders</a>
+                </div>
+            </li>
+            <li><a href="#">Reports</a></li>
+            <li><a href="settings.html">Settings</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <header class="header">
+            <h1>Laundry Management</h1>
+        </header>
+        <section class="order-section">
+            <h2>Place New Order</h2>
+            <form id="orderForm">
+                <div class="form-group">
+                    <label for="customer">Customer:</label>
+                    <input type="text" id="customer" name="customer" value="Austin Bailey">
+                </div>
+                <div class="form-group">
+                    <label for="service">Service:</label>
+                    <select id="service" name="service">
+                        <option value="Dry Cleaning" selected>Dry Cleaning</option>
+                        <option value="Washing">Washing</option>
+                        <option value="Ironing">Ironing</option>
+                    </select>
+                </div>
+                <div class="product-rows" id="productRows">
+                    <!-- Product rows will be dynamically added here -->
+                </div>
+                <button type="button" class="add-product-btn" onclick="addNewProductRow()">Add New Item</button>
+                <div class="charges">
+                    <h3>Charges</h3>
+                    <div class="charge-row">
+                        <label for="subtotal">Subtotal:</label>
+                        <input type="number" id="subtotal" value="18.80">
+                    </div>
+                    <div class="charge-row">
+                        <label for="tax">Tax Amount:</label>
+                        <input type="number" id="tax" value="1.32">
+                    </div>
+                    <div class="charge-row">
+                        <label for="total">Total Amount:</label>
+                        <input type="number" id="total" value="20.12">
+                    </div>
+                    <div class="charge-row">
+                        <label for="pickup">Pickup Charge:</label>
+                        <input type="number" id="pickup" value="50">
+                    </div>
+                    <div class="charge-row">
+                        <label for="delivery">Delivery Charge:</label>
+                        <input type="number" id="delivery" value="30">
+                    </div>
+                </div>
+                <div class="pickup-delivery">
+                    <h3>Pickup & Delivery</h3>
+                    <div class="pickup-row">
+                        <label for="pickupType">Pickup Type:</label>
+                        <select id="pickupType">
+                            <option value="Door Pickup" selected>Door Pickup</option>
+                            <option value="In-Store Pickup">In-Store Pickup</option>
+                        </select>
+                    </div>
+                    <div class="delivery-row">
+                        <label for="deliveryType">Delivery Type:</label>
+                        <select id="deliveryType">
+                            <option value="Door Delivery" selected>Door Delivery</option>
+                            <option value="In-Store Pickup">In-Store Pickup</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" class="save-btn" onclick="saveOrder()">Save Order</button>
+            </form>
+        </section>
+    </div>
+    <script>
+        // JavaScript for adding and deleting product rows
+        function addNewProductRow() {
+            var productRows = document.getElementById('productRows');
+            
+            var productRow = document.createElement('div');
+            productRow.classList.add('product-row');
+            productRow.innerHTML = `
+                <label for="product">Product:</label>
+                <select>
+                    <option value="Top/Shirt-Silk">Top/Shirt-Silk</option>
+                    <option value="Pants">Pants</option>
+                    <option value="Dress">Dress</option>
+                </select>
+                <label for="quantity">Quantity:</label>
+                <input type="number" value="1">
+                <label for="price">Unit Price:</label>
+                <input type="number" value="0.00">
+                <label for="amount">Amount:</label>
+                <input type="number" value="0.00">
+                <button type="button" class="delete-product-btn" onclick="deleteProductRow(this)">Delete</button>
+            `;
+            
+            productRows.appendChild(productRow);
+        }
+        
+        function deleteProductRow(button) {
+            var productRow = button.parentElement;
+            productRow.remove();
+        }
+    </script>
+</body>
+</html>
