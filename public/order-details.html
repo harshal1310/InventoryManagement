@@ -12,37 +12,40 @@
         <aside class="sidebar">
             <h2>SUPER Laundry</h2>
             <ul>
-                <li><a href="index.html">Dashboard</a></li>
-                <li><a href="customers.html">Customers</a></li>
-                <li><a href="products.html">Products</a></li>
+                <li><a href="dashboard">Dashboard</a></li>
+                <li><a href="customers">Customers</a></li>
+                <li><a href="products">Products</a></li>
                 <li><a href="#">Reports</a></li>
+                
                 <li>
                     <a href="#">Order</a>
                     <div class="submenu">
-                        <a href="create-order.html">Create Order</a>
-                        <a href="view-orders.html">View Orders</a>
+                        <a href="create-order">Create Order</a>
+                        <a href="view-orders">View Orders</a>
                     </div>
                 </li>
                 <li>
-                    <a href="#">Purchase1</a>
+                    <a href="#">Purchase</a>
                     <div class="submenu">
-                        <a href="add-supplier.html">Add Supplier</a>
-                        <a href="give-order.html">Give Order</a>
-                        <a href="myorders.html">My Orders</a>
+                        <a href="add-supplier">Add Supplier</a>
+                        <a href="give-order">Give Order</a>
+                        <a href="myorders">My Orders</a>
                     </div>
                 </li>
-                <li><a href="settings.html">Settings</a></li>
+                </li>
                 <li>
-                    <a href="#">Settings1</a>
+                    <a href="#">Settings</a>
                     <div class="submenu">
-                        <a href="add-user.html">Manage Users</a>
-                        <a href="add-services.html">Manage Services</a>
-                        <a href="add-branches.html">Manage Branches</a>
+                        <a href="add-user">Manage Users</a>
+                        <a href="add-services">Manage Services</a>
+                        <a href="add-branches">Manage Branches</a>
                     </div>
+                </li>
                 </li>
                 <li><a href="#">Admin Details</a></li>
-                <li><a href="#">Sign Out</a></li>
+                <li><a href="#">Sigh Out</a></li>
             </ul>
+            
             <div style="margin: 20px;">Powered By Company Name</div>
         </aside>
         <main class="main-content">
@@ -65,6 +68,7 @@
             fetch(`/api/getOrder/${orderId}`)
                 .then(response => response.json())
                 .then(order => {
+                    console.log(order)
                     if (!order) {
                         orderDetailsDiv.innerHTML = '<p>Order not found.</p>';
                         return;
@@ -75,8 +79,10 @@
                         <h2>Order #${order.id}</h2>
                         <p><strong>Customer Name:</strong> ${order.customer_name}</p>
                         <p><strong>Customer Address:</strong> ${order.customer_address}</p>
-                        <p><strong>Mobile:</strong> ${order.mobile}</p>
-                        <p><strong>Service:</strong> ${order.service}</p>
+                        <p><strong>Mobile:</strong> ${order.customer_mobile}</p>
+                        <p><strong>Service:</strong> ${order.order_status}</p>
+                        <p><strong>Service:</strong> ${order.payment_status}</p>
+
                         <p><strong>Pickup Date:</strong> ${order.pickup_date}</p>
                         <p><strong>Delivery Date:</strong> ${order.delivery_date}</p>
                         <p><strong>Total Amount:</strong> ${order.total_amount}</p>

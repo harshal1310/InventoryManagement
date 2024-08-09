@@ -7,45 +7,41 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/sidebar.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
-
 </head>
 <body>
 
 <aside class="sidebar">
     <h2>SUPER Laundry</h2>
     <ul>
-        <li><a href="dashboard.html">Dashboard</a></li>
-        <li><a href="customers.html">Customers</a></li>
-        <li><a href="products.html">Products</a></li>
+        <li><a href="dashboard">Dashboard</a></li>
+        <li><a href="customers">Customers</a></li>
+        <li><a href="products">Products</a></li>
         <li><a href="#">Reports</a></li>
         <li>
             <a href="#">Order</a>
             <div class="submenu">
-                <a href="create-order.html">Create Order</a>
-                <a href="view-orders.html">View Orders</a>
+                <a href="create-order">Create Order</a>
+                <a href="view-orders">View Orders</a>
             </div>
         </li>
         <li>
             <a href="#">Purchase</a>
             <div class="submenu">
-                <a href="add-supplier.html">Add Supplier</a>
-                <a href="give-order.html">Give Order</a>
-                <a href="myorders.html">My Orders</a>
+                <a href="add-supplier">Add Supplier</a>
+                <a href="give-order">Give Order</a>
+                <a href="myorders">My Orders</a>
             </div>
         </li>
-        </li>
-    
         <li>
             <a href="#">Settings</a>
             <div class="submenu">
-                <a href="add-user.html">Manage Users</a>
-                <a href="add-services.html">Manage Services</a>
-                <a href="add-branches.html">Manage Branches</a>
+                <a href="add-user">Manage Users</a>
+                <a href="add-services">Manage Services</a>
+                <a href="add-branches">Manage Branches</a>
             </div>
         </li>
-        </li>
         <li><a href="#">Admin Details</a></li>
-        <li><a href="#">Sigh Out</a></li>
+        <li><a href="#">Sign Out</a></li>
     </ul>
     
     <div style="margin: 20px;">Powered By Company Name</div>
@@ -54,56 +50,50 @@
 <div class="main-content">
     <div class="header">
         <div class="overview">
-            
             <div class="card">
                 <h3>Total Sales</h3>
-                <p>$12,345</p>
+                <p id="total-sales">$0</p>
             </div>
             <div class="card">
-                <h3>Todays Delivery</h3>
-                <p>9</p>
+                <h3>Today's Delivery</h3>
+                <p id="todays-delivery">0</p>
             </div>
             <div class="card">
                 <h3>Today's Orders</h3>
-                <p>5</p>
+                <p id="todays-orders">0</p>
             </div>
             <div class="card">
                 <h3>Payment Received</h3>
-                <p>$72,840</p>
+                <p id="payment-received">$0</p>
             </div>
             <div class="card">
                 <h3>Total Orders</h3>
-                <p>123</p>
+                <p id="total-orders">0</p>
             </div>
             <div class="card">
                 <h3>Pending Orders</h3>
-                <p>45</p>
+                <p id="pending-orders">0</p>
             </div>
             <div class="card">
                 <h3>Completed Orders</h3>
-                <p>78</p>
-            </div>
-            <div class="card">
-                <h3>Today's Orders</h3>
-                <p>12</p>
+                <p id="completed-orders">0</p>
             </div>
             <div class="card">
                 <h3>Today's Customers</h3>
-                <p>12</p>
+                <p id="todays-customers">0</p>
             </div>
             <div class="card">
-                <h3>This month Customers</h3>
-                <p>12</p>
+                <h3>This Month's Customers</h3>
+                <p id="this-month-customers">0</p>
             </div>
             <div class="card">
                 <h3>Today Collected Amount</h3>
-                <p>12</p>
+                <p id="today-collected-amount">$0</p>
             </div>
             <div class="card">
-                <h3>This month Expense</h3>
-                <p>12</p>
+                <h3>This Month's Expenses</h3>
+                <p id="this-month-expense">$0</p>
             </div>
-            
         </div>
     </div>
     <div class="charts-container">
@@ -127,94 +117,14 @@
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>INV001</td>
-                    <td>John Doe</td>
-                    <td>2023-06-10</td>
-                    <td>$250</td>
-                    <td></td>
-                    <td>Paid</td>
-                </tr>
-                <tr>
-                    <td>INV002</td>
-                    <td>Jane Smith</td>
-                    <td>2023-06-09</td>
-                    <td>$180</td>
-                    <td></td>
-                    <td>Pending</td>
-                </tr>
-                <tr>
-                    <td>INV003</td>
-                    <td>Bob Johnson</td>
-                    <td>2023-06-08</td>
-                    <td>$320</td>
-                    <td></td>
-                    <td>Paid</td>
-                </tr>
-                <tr>
-                    <td>INV004</td>
-                    <td>Alice Brown</td>
-                    <td>2023-06-07</td>
-                    <td>$150</td>
-                    <td></td>
-                    <td>Paid</td>
-                </tr>
-                <tr>
-                    <td>INV005</td>
-                    <td>Michael Lee</td>
-                    <td>2023-06-06</td>
-                    <td>$400</td>
-                    <td></td>
-                    <td>Pending</td>
-                </tr>
-                <tr>
-                    <td>INV006</td>
-                    <td>Linda Taylor</td>
-                    <td>2023-06-05</td>
-                    <td>$275</td>
-                    <td></td>
-                    <td>Paid</td>
-                </tr>
-                <tr>
-                    <td>INV007</td>
-                    <td>James Wilson</td>
-                    <td>2023-06-04</td>
-                    <td>$350</td>
-                    <td></td>
-                    <td>Pending</td>
-                </tr>
-                <tr>
-                    <td>INV008</td>
-                    <td>Patricia Martinez</td>
-                    <td>2023-06-03</td>
-                    <td>$220</td>
-                    <td></td>
-                    <td>Paid</td>
-                </tr>
-                <tr>
-                    <td>INV009</td>
-                    <td>David Anderson</td>
-                    <td>2023-06-02</td>
-                    <td>$310</td>
-                    <td></td>
-                    <td>Pending</td>
-                </tr>
-                <tr>
-                    <td>INV010</td>
-                    <td>Sarah Thomas</td>
-                    <td>2023-06-01</td>
-                    <td>$450</td>
-                    <td></td>
-                    <td>Paid</td>
-                </tr>
+            <tbody id="invoices-list">
+                <!-- Dynamic Invoice Rows Will Be Injected Here -->
             </tbody>
         </table>
     </div>
 </div>
 
-<script src="js/dashboard.js">
-</script>
+<script src="js/dashboard.js"></script>
 
 </body>
 </html>
