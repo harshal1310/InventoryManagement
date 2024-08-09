@@ -11,9 +11,10 @@ router.use(express.urlencoded({ extended: true }));
 
 router.get('/getCustomers', (req, res) => {
     console.log("get")
-    const query = 'SELECT * FROM customers';
+    const companyId = req.user.companyId;
+    const query = 'SELECT * FROM customers where company_id = ? ';
 
-    connection.query(query, (error, results) => {
+    connection.query(query,[companyId],(error, results) => {
         if (error) {
             console.error('Error fetching customers:', error);
             return res.status(500).json({ message: 'Failed to fetch customers' });
@@ -24,9 +25,9 @@ router.get('/getCustomers', (req, res) => {
     });
 });
 
-
 router.post('/add-customer', (req, res) => {
     console.log("Received request to add customer");
+    const companyId = req.user.companyId;
 
     // Extract customer data from the request body
     const { name, address, city, mobile, enrollmentDate, enrolledBy } = req.body;
@@ -35,20 +36,35 @@ router.post('/add-customer', (req, res) => {
     if (!name || !address || !city || !mobile || !enrollmentDate || !enrolledBy) {
         return res.status(400).json({ message: 'All fields are required' });
     }
-    console.log(req.body)
-    // SQL query to insert customer data
-    const query = `
-        INSERT INTO customers (name, address, city, mobile, enrollment_date, enrolled_by)
-        VALUES (?, ?, ?, ?, ?, ?)`;
+    console.log(req.body);
 
-    // Execute the query
-    connection.query(query, [name, address, city, mobile, enrollmentDate, enrolledBy], (error, results) => {
+    // Query to check if the customer already exists
+    const checkQuery = `SELECT * FROM customers WHERE mobile = ? AND company_id = ?`;
+
+    connection.query(checkQuery, [mobile, companyId], (error, results) => {
         if (error) {
-            console.error('Error inserting customer:', error);
-            return res.status(500).json({ message: 'Failed to add customer' });
+            console.error('Error checking customer existence:', error);
+            return res.status(500).json({ message: 'Failed to check customer existence' });
+        }
+        if (results.length > 0) {
+            console.log("customer already present")
+            return res.status(400).json({ message: 'Customer already exists' });
         }
 
-        res.status(200).json({ message: 'Customer added successfully' });
+        // SQL query to insert customer data
+        const insertQuery = `
+            INSERT INTO customers (name, address, city, mobile, enrollment_date, enrolled_by, company_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+        // Execute the insertion query
+        connection.query(insertQuery, [name, address, city, mobile, enrollmentDate, enrolledBy, companyId], (error, results) => {
+            if (error) {
+                console.error('Error inserting customer:', error);
+                return res.status(500).json({ message: 'Failed to add customer' });
+            }
+
+            res.status(200).json({ message: 'Customer added successfully' });
+        });
     });
 });
 

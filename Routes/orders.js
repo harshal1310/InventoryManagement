@@ -9,10 +9,9 @@ router.use(bodyParser.json()); // Ensure this middleware is applied
 // Route to save an order
 router.post('/saveOrder', (req, res) => {
     console.log("Received save order request");
-    console.log(req.body)
 
-    const company_id = parseInt(req.user.companyId);
-    console.log(company_id)
+    const companyId = parseInt(req.user.companyId);
+    
 
     const {
         customer_id,
@@ -30,6 +29,21 @@ router.post('/saveOrder', (req, res) => {
         pickup_date,
         delivery_date
     } = req.body;
+    if(!branch )
+        return  res.status(500).json({ message: 'Please Add Brach' });
+
+    const checkQuery = `SELECT * FROM customers WHERE mobile = ? AND company_id = ?`;
+
+    connection.query(checkQuery, [customer_id, companyId], (error, results) => {
+        if (error) {
+            console.error('Error checking customer existence:', error);
+            return res.status(500).json({ message: 'Failed to check customer existence' });
+        }
+        if (results.length < 1) {
+            console.log("customer not present")
+            return res.status(400).json({ message: 'Customer not present' });
+        }
+    })
 
     // 1. Validate the branch_id and company_id
     const branchQuery = `
@@ -38,7 +52,7 @@ router.post('/saveOrder', (req, res) => {
         WHERE branch_name = ? AND company_id = ?
     `;
         console.log(branch)
-    connection.query(branchQuery, [branch, company_id], (error, results) => {
+    connection.query(branchQuery, [branch, companyId], (error, results) => {
         if (error) {
             console.error('Error fetching branch details:', error);
             return res.status(500).json({ message: 'Failed to fetch branch details', error: error.message });
@@ -137,7 +151,7 @@ router.get('/getOrders', (req, res) => {
 
         // Now fetch orders for the found branch_id
         const orderQuery = `
-            SELECT o.order_id, o.branch_id, o.customer_mobile, o.service, o.total_amount,
+            SELECT o.order_id, o.branch_id, o.customer_mobile, o.order_status,o.payment_status,o.service, o.total_amount,o.invoice_generated,
                    c.name AS customer_name, c.address AS customer_address,
                    o.pickup_date, o.delivery_date
             FROM orders o
@@ -150,8 +164,9 @@ router.get('/getOrders', (req, res) => {
                 console.error('Error fetching orders:', error);
                 return res.status(500).json({ message: 'Failed to fetch orders', error: error.message });
             }
-
+            console.log("orderResults")
             console.log(orderResults);
+            
             res.status(200).json(orderResults);
         });
     });
@@ -163,14 +178,14 @@ router.get('/getOrder/:id', (req, res) => {
     console.log(`Fetching details for order ID ${orderId}...`);
 
     const query = `
-        SELECT o.order_id, o.branch_id, o.customer_mobile, o.service, o.type, o.subtotal, o.tax_amount, o.total_amount,
+        SELECT o.order_id, o.branch_id, o.customer_mobile, o.invoice_generated,o.service, o.type, o.subtotal, o.tax_amount, o.total_amount,
                o.pickup_charge, o.pickup_type, o.delivery_charge, o.delivery_type,
                o.pickup_date, o.delivery_date,
                c.name AS customer_name, c.address AS customer_address, c.city AS customer_city,
                i.product_name AS item_name, i.unit_price AS item_price, i.quantity AS item_quantity
         FROM orders o
         LEFT JOIN customers c ON o.customer_mobile = c.mobile
-        LEFT JOIN items i ON o.order_id = i.order_id
+        LEFT JOIN order_items i ON o.order_id = i.order_id
         WHERE o.order_id = ?
     `;
 
@@ -197,5 +212,30 @@ router.get('/getOrder/:id', (req, res) => {
         res.status(200).json(orderDetails);
     });
 });
+
+
+router.post('/updateInvoiceGenerated', (req, res) => {
+    const { orderId } = req.body;
+
+    if (!orderId) {
+        return res.status(400).json({ message: 'Order ID is required' });
+    }
+
+    const updateQuery = `
+        UPDATE orders
+        SET invoice_generated = 1
+        WHERE order_id = ?
+    `;
+
+    connection.query(updateQuery, [orderId], (error, results) => {
+        if (error) {
+            console.error('Error updating invoice_generated field:', error);
+            return res.status(500).json({ message: 'Failed to update invoice_generated field', error: error.message });
+        }
+
+        res.status(200).json({ success: true, message: 'Invoice generated successfully' });
+    });
+});
+
 
 module.exports = router;

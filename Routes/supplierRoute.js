@@ -6,59 +6,80 @@ const bodyParser = require('body-parser');
 // Middleware to parse JSON and URL-encoded data
 router.use(bodyParser.json()); // Ensure this middleware is applied
 
-let suppliers = [];
-let nextId = 1;
 
-// Add new supplier
-app.post('/suppliers', (req, res) => {
 
-    const { supplierName, contactPerson, phoneNumber, email, address } = req.body;
-    if (!supplierName || !contactPerson || !phoneNumber || !email || !address) {
+
+router.post('/suppliers', (req, res) => {
+    const companyId = req.user.companyId;
+    const enrolledBy = req.user.email;
+    console.log(companyId);
+    console.log(enrolledBy);
+    console.log(req.body)
+    const { supplierName, phoneNumber, address, email } = req.body;
+    if (!supplierName || !phoneNumber || !address  || !email ) {
+       // console.log(name)
+        //console.log(mobile)
+        console.log(email)
+        console.log(address)
         return res.status(400).json({ message: 'All fields are required' });
     }
-    const companyId = req.user.companyId
-    const newSupplier = { id: nextId++, supplierName, contactPerson, phoneNumber, email, address };
-    suppliers.push(newSupplier);
-    res.status(201).json(newSupplier);
+    
+    const query = 'INSERT INTO suppliers (phone_number, name, address, email, enrollment_date, enrolled_by, company_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    connection.query(query, [phoneNumber, supplierName, address, enrolledBy,  new Date(), enrolledBy , companyId], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Database error' });
+        }
+        res.status(201).json({ message: 'Added Successfully'});
+    });
 });
 
 // Get supplier by ID
-app.get('/suppliers/:id', (req, res) => {
-    const companyId = req.user.companyId
-
-    const supplier = suppliers.find(s => s.id === parseInt(req.params.id));
-    if (!supplier) {
-        return res.status(404).json({ message: 'Supplier not found' });
-    }
-    res.json(supplier);
+router.get('/suppliers/:id', (req, res) => {
+    const supplierId = parseInt(req.params.id);
+    const query = 'SELECT * FROM supplier WHERE id = ?';
+    connection.query(query, [supplierId], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Database error' });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'Supplier not found' });
+        }
+        res.json(results[0]);
+    });
 });
 
 // Update supplier by ID
-app.put('/api/suppliers/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const companyId = req.user.companyId
-
-    const { supplierName, contactPerson, phoneNumber, email, address } = req.body;
-    const supplier = suppliers.find(s => s.id === id);
-    if (!supplier) {
-        return res.status(404).json({ message: 'Supplier not found' });
-    }
-    supplier.supplierName = supplierName;
-    supplier.contactPerson = contactPerson;
-    supplier.phoneNumber = phoneNumber;
-    supplier.email = email;
-    supplier.address = address;
-    res.json(supplier);
+router.put('/suppliers/:id', (req, res) => {
+    const supplierId = parseInt(req.params.id);
+    const { name, mobile, address, city, email, enrollment_date, total_orders } = req.body;
+    const query = 'UPDATE supplier SET name = ?, mobile = ?, address = ?, city = ?, email = ?, enrollment_date = ?, total_orders = ? WHERE id = ?';
+    connection.query(query, [name, mobile, address, city, email, enrollment_date, total_orders, supplierId], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Database error' });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Supplier not found' });
+        }
+        res.json({ id: supplierId, name, mobile, address, city, email, enrollment_date, total_orders });
+    });
 });
 
 // Delete supplier by ID
-app.delete('/api/suppliers/:id', (req, res) => {
-    const companyId = req.user.companyId
-
-    const id = parseInt(req.params.id);
-    suppliers = suppliers.filter(s => s.id !== id);
-    res.status(204).end();
+router.delete('/suppliers/:id', (req, res) => {
+    const supplierId = parseInt(req.params.id);
+    const query = 'DELETE FROM supplier WHERE id = ?';
+    connection.query(query, [supplierId], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Database error' });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Supplier not found' });
+        }
+        res.status(204).end();
+    });
 });
-
-
 module.exports = router
