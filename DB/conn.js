@@ -22,7 +22,7 @@ connection.connect(err => {
     const tableQueries = [
         `CREATE TABLE IF NOT EXISTS companies (
             company_id SERIAL PRIMARY KEY,
-            company_name VARCHAR(255) UNIQUE NOT NULL,
+            company_name VARCHAR(255)  NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );`,
 

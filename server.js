@@ -164,8 +164,9 @@ app.post('/signup', async (req, res) => {
 
     try {
         // Insert company and get companyId
-        const companyResult = await connection.query('INSERT INTO companies (company_name) VALUES ($1) RETURNING id', [companyName]);
-        const companyId = companyResult.rows[0].id;
+        const companyResult = await connection.query('INSERT INTO companies (company_name) VALUES ($1) RETURNING company_id', [companyName]);
+        const companyId = companyResult.rows[0].company_id;
+        console.log(companyId);
 
         // Insert user into the database
         await connection.query('INSERT INTO users1 (email, phone, password_hash, company_id) VALUES ($1, $2, $3, $4)', [email, phone, hashedPassword, companyId]);
