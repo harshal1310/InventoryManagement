@@ -10,12 +10,22 @@ const dbName = process.env.DB_NAME;
 if (!dbNamePattern.test(dbName)) {
     throw new Error(`Database name "${dbName}" does not match the required pattern: /^[a-z_][a-z0-9_]*$/`);
 }
+/*
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'systemmanagement',
-    port: 5433
+    host: process.env.HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.PORT
+});*/
+const dbUrl = new URL(process.env.DB_URL);
+
+const connection = mysql.createConnection({
+    host: dbUrl.hostname,
+    user: dbUrl.username,
+    password: dbUrl.password,
+    database: dbUrl.pathname.slice(1), // Remove the leading '/'
+    port: dbUrl.port
 });
 
 
