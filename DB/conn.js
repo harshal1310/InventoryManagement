@@ -1,44 +1,31 @@
-const mysql = require('mysql2');
-
+const { Client } = require('pg');
 require('dotenv').config(); 
 
+const dbUrl = process.env.DB_URL;
 
-const dbNamePattern = /(^[a-z_][a-z0-9_]*$)|(^$)/;
-// Create a connection to the MySQL database
-const dbName = process.env.DB_NAME;
-
-if (!dbNamePattern.test(dbName)) {
-    throw new Error(`Database name "${dbName}" does not match the required pattern: /^[a-z_][a-z0-9_]*$/`);
-}
-/*
-const connection = mysql.createConnection({
-    host: process.env.HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.PORT
-});*/
-const dbUrl = new URL(process.env.DB_URL);
-
-const connection = mysql.createConnection({
-    host: dbUrl.hostname,
-    user: dbUrl.username,
-    password: dbUrl.password,
-    database: dbUrl.pathname.slice(1), // Remove the leading '/'
-    port: dbUrl.port
+// Create a connection to the PostgreSQL database using the URL
+const connection = new Client({
+    connectionString: dbUrl,
+    ssl: {
+        rejectUnauthorized: false // For self-signed certificates; set to `true` if using a trusted certificate
+    }
 });
 
-
-
-connection.connect((err) => {
+connection.connect(err => {
     if (err) {
         console.error('Error connecting to the database:', err);
         return;
     }
     console.log('Connected to the PostgreSQL database!');
 
-    // List of table creation queries
+    // List of table creation queries in the correct order
     const tableQueries = [
+        `CREATE TABLE IF NOT EXISTS companies (
+            company_id SERIAL PRIMARY KEY,
+            company_name VARCHAR(255) UNIQUE NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );`,
+
         `CREATE TABLE IF NOT EXISTS branches (
             branch_id SERIAL PRIMARY KEY,
             branch_name VARCHAR(255) NOT NULL,
@@ -47,12 +34,6 @@ connection.connect((err) => {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             company_id INT REFERENCES companies(company_id),
             email VARCHAR(100) NOT NULL
-        );`,
-
-        `CREATE TABLE IF NOT EXISTS companies (
-            company_id SERIAL PRIMARY KEY,
-            company_name VARCHAR(255) UNIQUE NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );`,
 
         `CREATE TABLE IF NOT EXISTS customers (
@@ -66,13 +47,6 @@ connection.connect((err) => {
             enrolled_by VARCHAR(50),
             total_orders INT DEFAULT 0,
             company_id INT REFERENCES companies(company_id)
-        );`,
-
-        `CREATE TABLE IF NOT EXISTS invoices (
-            id SERIAL PRIMARY KEY,
-            order_id INT UNIQUE NOT NULL REFERENCES orders(order_id),
-            pdf_data BYTEA NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );`,
 
         `CREATE TABLE IF NOT EXISTS orders (
@@ -93,6 +67,13 @@ connection.connect((err) => {
             order_status VARCHAR(50) DEFAULT 'pending',
             payment_status VARCHAR(50) DEFAULT 'unpaid',
             invoice_generated INT DEFAULT 0
+        );`,
+
+        `CREATE TABLE IF NOT EXISTS invoices (
+            id SERIAL PRIMARY KEY,
+            order_id INT UNIQUE NOT NULL REFERENCES orders(order_id),
+            pdf_data BYTEA NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );`,
 
         `CREATE TABLE IF NOT EXISTS order_items (
@@ -127,24 +108,20 @@ connection.connect((err) => {
     ];
 
     // Execute each query in sequence
-    tableQueries.forEach(query => {
-        client.query(query, (err, res) => {
-            if (err) {
-                console.error('Error creating table:', err.stack);
-            } else {
+    const executeQueries = async () => {
+        for (const query of tableQueries) {
+            try {
+                const res = await connection.query(query);
                 console.log('Table created or already exists:', res.command);
+            } catch (err) {
+                console.error('Error creating table:', err.stack);
             }
-        });
-    });
-
-    // Close the connection after queries are executed
-    connection.end((err) => {
-        if (err) {
-            console.error('Error closing the connection:', err);
-        } else {
-            console.log('Database connection closed.');
         }
-    });
+
+        
+    };
+
+    executeQueries();
 });
 
 module.exports = connection;
