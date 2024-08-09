@@ -128,7 +128,7 @@ app.post('/login', async (req, res) => {
     try {
         // Query to get user details based on email
         const query = 'SELECT * FROM users1 WHERE email = $1';
-        const result = await pool.query(query, [email]);
+        const result = await connection.query(query, [email]);
 
         if (result.rows.length === 0) {
             return res.status(401).json({ message: 'Invalid email or password' });
@@ -161,9 +161,19 @@ app.post('/signup', async (req, res) => {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password are required' });
+    }
 
     try {
         // Insert company and get companyId
+        const checkQuery = 'SELECT * FROM users1 WHERE email = $1';
+        const result = await connection.query(checkQuery, [email]);
+
+        if (result.rows.length > 0) {
+            return res.status(401).json({ message: 'email already registered' });
+        }
+        
         const companyResult = await connection.query('INSERT INTO companies (company_name) VALUES ($1) RETURNING company_id', [companyName]);
         const companyId = companyResult.rows[0].company_id;
         console.log(companyId);
