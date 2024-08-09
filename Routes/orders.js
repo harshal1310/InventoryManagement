@@ -1,18 +1,26 @@
 const express = require('express');
 const router = express.Router();
-const connection = require('../DB/conn.js'); // Adjust the path as needed
+const pool = require('../DB/conn.js'); // Adjust the path as needed
 const bodyParser = require('body-parser');
 
 // Middleware to parse JSON and URL-encoded data
 router.use(bodyParser.json()); // Ensure this middleware is applied
 
+// Helper function to execute queries
+async function queryDatabase(query, params = []) {
+    try {
+        const result = await pool.query(query, params);
+        return result.rows;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
 // Route to save an order
-router.post('/saveOrder', (req, res) => {
+router.post('/saveOrder', async (req, res) => {
     console.log("Received save order request");
 
     const companyId = parseInt(req.user.companyId);
-    
-
     const {
         customer_id,
         branch,
@@ -29,49 +37,38 @@ router.post('/saveOrder', (req, res) => {
         pickup_date,
         delivery_date
     } = req.body;
-    if(!branch )
-        return  res.status(500).json({ message: 'Please Add Brach' });
 
-    const checkQuery = `SELECT * FROM customers WHERE mobile = ? AND company_id = ?`;
+    if (!branch) return res.status(500).json({ message: 'Please Add Branch' });
 
-    connection.query(checkQuery, [customer_id, companyId], (error, results) => {
-        if (error) {
-            console.error('Error checking customer existence:', error);
-            return res.status(500).json({ message: 'Failed to check customer existence' });
-        }
-        if (results.length < 1) {
-            console.log("customer not present")
+    try {
+        // Check if customer exists
+        const checkQuery = `SELECT * FROM customers WHERE mobile = $1 AND company_id = $2`;
+        const customerResults = await queryDatabase(checkQuery, [customer_id, companyId]);
+
+        if (customerResults.length < 1) {
+            console.log("Customer not present");
             return res.status(400).json({ message: 'Customer not present' });
         }
-    })
 
-    // 1. Validate the branch_id and company_id
-    const branchQuery = `
-        SELECT branch_id
-        FROM branches
-        WHERE branch_name = ? AND company_id = ?
-    `;
-        console.log(branch)
-    connection.query(branchQuery, [branch, companyId], (error, results) => {
-        if (error) {
-            console.error('Error fetching branch details:', error);
-            return res.status(500).json({ message: 'Failed to fetch branch details', error: error.message });
-        }
+        // Validate branch
+        const branchQuery = `SELECT branch_id FROM branches WHERE branch_name = $1 AND company_id = $2`;
+        const branchResults = await queryDatabase(branchQuery, [branch, companyId]);
 
-        // Check if a branch was found
-        if (results.length === 0) {
+        if (branchResults.length === 0) {
             return res.status(404).json({ message: 'Branch not found' });
         }
-        console.log(results[0].branch_id)
-        // 2. Insert the order into the orders table
+
+        const branchId = branchResults[0].branch_id;
+
+        // Insert order
         const orderQuery = `
             INSERT INTO orders (
                 branch_id, customer_mobile, service, type, subtotal, tax_amount, total_amount, pickup_charge, pickup_type,
                 delivery_charge, delivery_type, pickup_date, delivery_date
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING order_id
         `;
         const orderValues = [
-            results[0].branch_id,
+            branchId,
             customer_id,
             service,
             type,
@@ -85,63 +82,42 @@ router.post('/saveOrder', (req, res) => {
             pickup_date,
             delivery_date
         ];
+        const orderResults = await queryDatabase(orderQuery, orderValues);
+        const orderId = orderResults[0].order_id;
+        console.log("Saving order items...");
 
-        connection.query(orderQuery, orderValues, (error, orderResults) => {
-            if (error) {
-                console.error('Error saving order:', error);
-                return res.status(500).json({ message: 'Failed to save order', error: error.message });
-            }
+        // Insert items
+        const itemQuery = `
+            INSERT INTO order_items (product_name, quantity, unit_price, order_id)
+            VALUES ${products.map((_, i) => `($1, $2, $3, $${i + 4})`).join(', ')}
+        `;
+        const itemValues = products.flatMap(product => [product.name, product.quantity, product.price, orderId]);
 
-            const orderId = orderResults.insertId;
-            console.log("Saving order items...");
+        if (products.length > 0) {
+            await queryDatabase(itemQuery, itemValues);
+        }
 
-            // 3. Prepare and insert items into the order_items table
-            const itemQuery = `
-                INSERT INTO order_items (product_name, quantity, unit_price,order_id)
-                VALUES ?
-            `;
-            const itemValues = products.map(product => [product.name, product.quantity, product.price,  orderId]);
-
-            // Check if itemValues is not empty before executing the query
-            if (itemValues.length > 0) {
-                connection.query(itemQuery, [itemValues], (error) => {
-                    if (error) {
-                        console.error('Error saving order items:', error);
-                        return res.status(500).json({ message: 'Failed to save order items', error: error.message });
-                    }
-
-                    res.status(200).json({ message: 'Order and items saved successfully', orderId });
-                });
-            } else {
-                // If there are no items, return a success message without inserting into the order_items table
-                res.status(200).json({ message: 'Order saved successfully with no items', orderId });
-            }
-        });
-    });
+        res.status(200).json({ message: 'Order and items saved successfully', orderId });
+    } catch (error) {
+        console.error('Error saving order:', error);
+        res.status(500).json({ message: 'Failed to save order', error: error.message });
+    }
 });
 
 // Route to get all orders
-router.get('/getOrders', (req, res) => {
+router.get('/getOrders', async (req, res) => {
     console.log("Fetching orders...");
     const companyId = req.user.companyId;
-    const branchName = req.query.branchName; // Get branch name from query parameters
+    const branchName = req.query.branchName;
 
     if (!branchName) {
         return res.status(400).json({ message: 'Branch name is required' });
     }
 
-    // First, find the branch_id for the given branchName
-    const branchQuery = `
-        SELECT branch_id
-        FROM branches
-        WHERE branch_name = ? AND company_id = ?
-    `;
-
-    connection.query(branchQuery, [branchName, companyId], (error, branchResults) => {
-        if (error) {
-            console.error('Error fetching branch ID:', error);
-            return res.status(500).json({ message: 'Failed to fetch branch ID', error: error.message });
-        }
+    try {
+        // Find branch_id
+        const branchQuery = `SELECT branch_id FROM branches WHERE branch_name = $1 AND company_id = $2`;
+        const branchResults = await queryDatabase(branchQuery, [branchName, companyId]);
 
         if (branchResults.length === 0) {
             return res.status(404).json({ message: 'Branch not found' });
@@ -149,57 +125,49 @@ router.get('/getOrders', (req, res) => {
 
         const branchId = branchResults[0].branch_id;
 
-        // Now fetch orders for the found branch_id
+        // Fetch orders
         const orderQuery = `
-            SELECT o.order_id, o.branch_id, o.customer_mobile, o.order_status,o.payment_status,o.service, o.total_amount,o.invoice_generated,
+            SELECT o.order_id, o.branch_id, o.customer_mobile, o.order_status, o.payment_status, o.service, o.total_amount, o.invoice_generated,
                    c.name AS customer_name, c.address AS customer_address,
                    o.pickup_date, o.delivery_date
             FROM orders o
             LEFT JOIN customers c ON o.customer_mobile = c.mobile
-            WHERE o.branch_id = ?
+            WHERE o.branch_id = $1
         `;
 
-        connection.query(orderQuery, [branchId], (error, orderResults) => {
-            if (error) {
-                console.error('Error fetching orders:', error);
-                return res.status(500).json({ message: 'Failed to fetch orders', error: error.message });
-            }
-            console.log("orderResults")
-            console.log(orderResults);
-            
-            res.status(200).json(orderResults);
-        });
-    });
+        const orderResults = await queryDatabase(orderQuery, [branchId]);
+
+        res.status(200).json(orderResults);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({ message: 'Failed to fetch orders', error: error.message });
+    }
 });
 
 // Route to get details of a specific order
-router.get('/getOrder/:id', (req, res) => {
+router.get('/getOrder/:id', async (req, res) => {
     const orderId = req.params.id;
     console.log(`Fetching details for order ID ${orderId}...`);
 
-    const query = `
-        SELECT o.order_id, o.branch_id, o.customer_mobile, o.invoice_generated,o.service, o.type, o.subtotal, o.tax_amount, o.total_amount,
-               o.pickup_charge, o.pickup_type, o.delivery_charge, o.delivery_type,
-               o.pickup_date, o.delivery_date,
-               c.name AS customer_name, c.address AS customer_address, c.city AS customer_city,
-               i.product_name AS item_name, i.unit_price AS item_price, i.quantity AS item_quantity
-        FROM orders o
-        LEFT JOIN customers c ON o.customer_mobile = c.mobile
-        LEFT JOIN order_items i ON o.order_id = i.order_id
-        WHERE o.order_id = ?
-    `;
+    try {
+        const query = `
+            SELECT o.order_id, o.branch_id, o.customer_mobile, o.invoice_generated, o.service, o.type, o.subtotal, o.tax_amount, o.total_amount,
+                   o.pickup_charge, o.pickup_type, o.delivery_charge, o.delivery_type,
+                   o.pickup_date, o.delivery_date,
+                   c.name AS customer_name, c.address AS customer_address, c.city AS customer_city,
+                   i.product_name AS item_name, i.unit_price AS item_price, i.quantity AS item_quantity
+            FROM orders o
+            LEFT JOIN customers c ON o.customer_mobile = c.mobile
+            LEFT JOIN order_items i ON o.order_id = i.order_id
+            WHERE o.order_id = $1
+        `;
 
-    connection.query(query, [orderId], (error, results) => {
-        if (error) {
-            console.error('Error fetching order details:', error);
-            return res.status(500).json({ message: 'Failed to fetch order details', error: error.message });
-        }
+        const results = await queryDatabase(query, [orderId]);
 
         if (results.length === 0) {
             return res.status(404).json({ message: 'Order not found' });
         }
 
-        // Process results to include items in the response
         const orderDetails = {
             ...results[0],
             items: results.map(row => ({
@@ -210,32 +178,34 @@ router.get('/getOrder/:id', (req, res) => {
         };
 
         res.status(200).json(orderDetails);
-    });
+    } catch (error) {
+        console.error('Error fetching order details:', error);
+        res.status(500).json({ message: 'Failed to fetch order details', error: error.message });
+    }
 });
 
-
-router.post('/updateInvoiceGenerated', (req, res) => {
+// Route to update invoice_generated
+router.post('/updateInvoiceGenerated', async (req, res) => {
     const { orderId } = req.body;
 
     if (!orderId) {
         return res.status(400).json({ message: 'Order ID is required' });
     }
 
-    const updateQuery = `
-        UPDATE orders
-        SET invoice_generated = 1
-        WHERE order_id = ?
-    `;
+    try {
+        const updateQuery = `
+            UPDATE orders
+            SET invoice_generated = 1
+            WHERE order_id = $1
+        `;
 
-    connection.query(updateQuery, [orderId], (error, results) => {
-        if (error) {
-            console.error('Error updating invoice_generated field:', error);
-            return res.status(500).json({ message: 'Failed to update invoice_generated field', error: error.message });
-        }
+        await queryDatabase(updateQuery, [orderId]);
 
         res.status(200).json({ success: true, message: 'Invoice generated successfully' });
-    });
+    } catch (error) {
+        console.error('Error updating invoice_generated field:', error);
+        res.status(500).json({ message: 'Failed to update invoice_generated field', error: error.message });
+    }
 });
-
 
 module.exports = router;

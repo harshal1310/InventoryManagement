@@ -9,17 +9,6 @@ const jwt = require('jsonwebtoken')
 const cookieParser = require('cookie-parser');
 const jwtSecret = '1234'
 
-//const multer = require("multer");
-//const nodemailer = require('nodemailer');
-/*const jobRoutes = require('./Routes/JobRoute.js');
-const authRoute = require('./Routes/AuthRoute.js');
-const candidatesRoute = require('./routes/candidatesRoute');
-
-const cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
-const session = require('express-session');
-const cron = require('node-cron');
-*/
 const customerRoutes = require('./Routes/customers'); // Import the customer routes
 const orderRoutes = require('./Routes/orders');
 const settings = require('./Routes/settingSchema');
@@ -129,28 +118,23 @@ app.use('/api',authenticateToken,dashboard);
 
 
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
         return res.status(400).json({ message: 'Email and password are required' });
     }
-    console.log(email);
-    console.log(password);
 
-    const query = 'SELECT * FROM users1 WHERE email = ?';
-    connection.query(query, [email], async (err, results) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ message: 'Database error' });
-        }
-        console.log(results)
+    try {
+        // Query to get user details based on email
+        const query = 'SELECT * FROM users1 WHERE email = $1';
+        const result = await pool.query(query, [email]);
 
-        if (results.length === 0) {
+        if (result.rows.length === 0) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        const user = results[0];
+        const user = result.rows[0];
 
         // Verify password
         const passwordIsValid = await bcrypt.compare(password, user.password_hash);
@@ -164,10 +148,11 @@ app.post('/login', (req, res) => {
         res.cookie('token', token, { maxAge: 24 * 60 * 60 * 1000, httpOnly: true });
 
         res.json({ message: 'Login successful' });
-    });
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 });
-
-
 
 app.post('/signup', async (req, res) => {
     console.log("In signup");
@@ -177,39 +162,22 @@ app.post('/signup', async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Function to insert company and return companyId
-    const insertCompany = () => {
-        return new Promise((resolve, reject) => {
-            const companyQuery = 'INSERT INTO companies (company_name) VALUES (?)';
-            connection.query(companyQuery, [companyName], (err, results) => {
-                if (err) {
-                    console.error('Error inserting company:', err);
-                    return reject(new Error('Internal server error.'));
-                }
-                resolve(results.insertId);
-            });
-        });
-    };
-
     try {
-        const companyId = await insertCompany();
+        // Insert company and get companyId
+        const companyResult = await connection.query('INSERT INTO companies (company_name) VALUES ($1) RETURNING id', [companyName]);
+        const companyId = companyResult.rows[0].id;
 
         // Insert user into the database
-        const userQuery = 'INSERT INTO users1 (email, phone, password_hash, company_id) VALUES (?, ?, ?, ?)';
-        connection.query(userQuery, [email, phone, hashedPassword, companyId], (err) => {
-            if (err) {
-                console.error('Error inserting user:', err);
-                return res.status(500).json({ message: 'Internal server error.' });
-            }
-            const token = jwt.sign({ email, companyId }, jwtSecret, { expiresIn: "1d" });
-            res.cookie('token', token, { maxAge: 24 * 60 * 60 * 1000 });
-            res.status(201).json({ message: 'User and company created successfully.' });
-        });
+        await connection.query('INSERT INTO users1 (email, phone, password_hash, company_id) VALUES ($1, $2, $3, $4)', [email, phone, hashedPassword, companyId]);
+
+        const token = jwt.sign({ email, companyId }, jwtSecret, { expiresIn: "1d" });
+        res.cookie('token', token, { maxAge: 24 * 60 * 60 * 1000 });
+        res.status(201).json({ message: 'User and company created successfully.' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error in signup:', error);
+        res.status(500).json({ message: 'Internal server error.' });
     }
 });
-
 // Add your other routes an
 
 
