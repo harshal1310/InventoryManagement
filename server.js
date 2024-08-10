@@ -31,8 +31,27 @@ app.use(cookieParser());
 
 
 // Serve static files (HTML, CSS, JavaScript)
-app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/', (req, res) => {
+    // Redirect to signup if no
+    console.log("in")
+    const token = req.cookies.token;
+
+    if (!token) {
+        return res.sendFile(path.join(__dirname, 'public', 'signup.html'));
+    }
+
+    // If user is authenticated, proceed with token verification
+    jwt.verify(token, jwtSecret, (err, user) => {
+        if (err) {
+            return res.sendFile(path.join(__dirname, 'public', 'signup.html'));
+        }
+
+        // If token is valid, redirect to dashboard or another page
+        return res.redirect('/dashboard');
+    });
+});
+app.use(express.static(path.join(__dirname, 'public')));
 
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.token;
@@ -56,10 +75,7 @@ app.get('/signup', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'signup.html'));
 });
 
-app.get('/',authenticateToken,(req,res)=> {
-    console.log("default")
-    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
-})
+
 app.get('/customers', authenticateToken,(req, res) => {
     console.log(req.user)
     res.sendFile(path.join(__dirname, 'public', 'customers.html'));
