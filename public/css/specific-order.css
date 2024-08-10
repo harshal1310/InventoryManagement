@@ -8,17 +8,27 @@ body {
     overflow: hidden;
 }
 
+.sidebar {
+    width: 250px; /* Adjust based on your sidebar width */
+    background-color: #2c3e50;
+    position: fixed;
+    height: 100vh;
+    padding-top: 20px;
+}
 
+.main-content {
+    margin-left: 350px; /* Match this to the sidebar width plus some space */
+    padding: 20px;
+}
 
-        .invoice-container {
-            width: 80%;
-            margin: 20px auto;
-            border: 1px solid #ccc;
-            padding: 20px;
-            background-color: #fff;
-        }
+.invoice-container {
+    width: 100%;
+    border: 1px solid #ccc;
+    padding: 20px;
+    background-color: #fff;
+}
 
-        .header {
+.header {
     background-color: #ffffff;
     padding: 20px;
     box-shadow: 0 7px 3px rgba(0, 0, 0, 0.1);
@@ -31,64 +41,65 @@ body {
 .header h1 {
     margin: 0;
 }
-        .company-info {
-            text-align: right;
-        }
 
-        .bill-ship {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
+.company-info {
+    text-align: right;
+}
 
-        .bill-ship div {
-            width: 48%;
-        }
+.bill-ship {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
 
-        .invoice-details {
-            width: 100%;
-            margin-bottom: 20px;
-            border: 1px solid #c76334;
-            padding: 10px;
-        }
+.bill-ship div {
+    width: 48%;
+}
 
-        .invoice-details div {
-            margin-bottom: 8px;
-        }
+.invoice-details {
+    width: 100%;
+    margin-bottom: 20px;
+    border: 1px solid #c76334;
+    padding: 10px;
+}
 
-        .invoice-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+.invoice-details div {
+    margin-bottom: 8px;
+}
 
-        .invoice-table th, .invoice-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
 
-        .invoice-table th {
-            background-color: #c76334;
-            color: #fff;
-        }
+.invoice-table th, .invoice-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
 
-        .totals {
-            text-align: right;
-            margin-top: 20px;
-        }
+.invoice-table th {
+    background-color: #c76334;
+    color: #fff;
+}
 
-        .totals div {
-            margin-bottom: 8px;
-        }
+.totals {
+    text-align: right;
+    margin-top: 20px;
+}
 
-        .totals .total-amount {
-            font-size: 24px;
-            font-weight: bold;
-        }
+.totals div {
+    margin-bottom: 8px;
+}
 
-        .terms {
-            margin-top: 40px;
-            font-size: 14px;
-            color: #666;
-        }
+.totals .total-amount {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.terms {
+    margin-top: 40px;
+    font-size: 14px;
+    color: #666;
+}

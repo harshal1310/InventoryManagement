@@ -208,4 +208,35 @@ router.post('/updateInvoiceGenerated', async (req, res) => {
     }
 });
 
+
+router.post('/updateOrderStatus', async (req, res) => {
+    const { orderId, newStatus } = req.body;
+
+    try {
+        await queryDatabase(
+            'UPDATE orders SET order_status = $1 WHERE order_id = $2',
+            [newStatus, orderId]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        res.status(500).json({ success: false, message: 'Failed to update order status' });
+    }
+});
+router.post('/updatePaymentStatus', async (req, res) => {
+    const { orderId, newStatus } = req.body;
+
+    try {
+        await queryDatabase(
+            'UPDATE orders SET payment_status = $1 WHERE order_id = $2',
+            [newStatus, orderId]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error updating payment status:', error);
+        res.status(500).json({ success: false, message: 'Failed to update payment status' });
+    }
+});
+
+
 module.exports = router;

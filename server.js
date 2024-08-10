@@ -58,7 +58,7 @@ app.get('/signup', (req, res) => {
 
 app.get('/',authenticateToken,(req,res)=> {
     console.log("default")
-    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
 })
 app.get('/customers', authenticateToken,(req, res) => {
     console.log(req.user)
@@ -88,7 +88,10 @@ app.get('/add-services', authenticateToken,(req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'add-services.html'));
 });
 
-
+app.get('/invoices', authenticateToken,(req, res) => {
+    console.log(req.user)
+    res.sendFile(path.join(__dirname, 'public', 'invoices.html'));
+});
 
 
 

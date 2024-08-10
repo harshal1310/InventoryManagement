@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laundry Management System</title>
+    <link rel="stylesheet" href="css/invoices.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+</head>
+<body>
+
+<aside class="sidebar">
+    <h2>SUPER Laundry</h2>
+    <ul>
+        <li><a href="dashboard">Dashboard</a></li>
+        <li><a href="customers">Customers</a></li>
+        <li><a href="products">Products</a></li>
+        <li><a href="invoices">Invoices</a></li>
+        
+        <li>
+            <a href="#">Order</a>
+            <div class="submenu">
+                <a href="create-order">Create Order</a>
+                <a href="view-orders">View Orders</a>
+            </div>
+        </li>
+        <li>
+            <a href="#">Purchase</a>
+            <div class="submenu">
+                <a href="add-supplier">Add Supplier</a>
+                <a href="give-order">Give Order</a>
+                <a href="myorders">My Orders</a>
+            </div>
+        </li>
+        </li>
+        <li>
+            <a href="#">Settings</a>
+            <div class="submenu">
+                <a href="add-user">Manage Users</a>
+                <a href="add-services">Manage Services</a>
+                <a href="add-branches">Manage Branches</a>
+            </div>
+        </li>
+        </li>
+        <li><a href="#">Admin Details</a></li>
+        <li><a href="#">Sigh Out</a></li>
+    </ul>
+    
+</aside>
+
+<div class="main-content">
+    <div class="header">
+        <div class="overview">
+            <!-- Header content -->
+        </div>
+    </div>
+    
+    <div class="invoices-table">
+        <h3>Last 10 Invoices</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Invoice #</th>
+                    <th>Number</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Order Status</th>
+                    <th>Payment Status</th>
+                </tr>
+            </thead>
+            <tbody id="invoices-list">
+                <!-- Dynamic Invoice Rows Will Be Injected Here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            // Fetch the invoice data from the backend
+            const response = await fetch('/api/getinvoices');
+            const invoices = await response.json();
+            console.log(invoices)
+
+            // Get the tbody element where invoice rows will be injected
+            const invoicesList = document.getElementById('invoices-list');
+
+            // Generate HTML for each invoice and append to the table
+            // Check if invoices is an array before processing
+        if (Array.isArray(invoices)) {
+            // Get the tbody element where invoice rows will be injected
+            const invoicesList = document.getElementById('invoices-list');
+
+            // Generate HTML for each invoice and append to the table
+            invoices.forEach(invoice => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    
+                    <td id="invoice-${invoice.invoicenumber}" class="create-invoice">
+                    <a href="/api/getInvoice/${invoice.invoicenumber}" target="_blank">${invoice.invoicenumber}</a>
+                </td>
+                    <td>${invoice.number}
+                    <td>${invoice.customer}</td>
+                    <td>${invoice.date}</td>
+                    <td>${invoice.amount}</td>
+                    <td>${invoice.orderstatus}</td>
+                    <td>${invoice.paymentstatus}</td>
+                `;
+                invoicesList.appendChild(row);
+            });
+        } else {
+            console.error('Expected an array but received:', invoices);
+        }
+        } catch (error) {
+            console.error('Error fetching invoices:', error);
+        }
+    });
+</script>
+
+</body>
+</html>

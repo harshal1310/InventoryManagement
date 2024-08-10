@@ -6,6 +6,7 @@ const PDFDocument = require('pdfkit');
 const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
+const { connect } = require('http2');
 
 // Middleware to parse JSON and URL-encoded data
 router.use(bodyParser.json());
@@ -163,6 +164,7 @@ router.get('/invoices/:fileName', (req, res) => {
 });
 
 router.get('/getInvoice/:orderId', async (req, res) => {
+    console.log("getinvocie")
     const { orderId } = req.params;
 
     try {
@@ -183,4 +185,25 @@ router.get('/getInvoice/:orderId', async (req, res) => {
     }
 });
 
+router.get('/getinvoices', async (req, res) => {
+    console.log("in voces")
+    try {
+        const invoices = await pool.query(
+            `SELECT o.order_id AS invoiceNumber,o.customer_mobile AS Number, 
+                    c.name AS customer, 
+                    o.delivery_date AS date, 
+                    o.total_amount AS amount, 
+                    o.order_status AS orderStatus, 
+                    o.payment_status AS paymentStatus 
+             FROM orders o 
+             JOIN customers c ON o.customer_mobile = c.mobile 
+             ORDER BY o.order_id DESC LIMIT 10`
+        );
+        console.log(invoices.rows)
+        res.status(201).json(invoices.rows);
+    } catch (error) {
+        console.error('Error fetching invoices:', error);
+        res.status(500).json({ error: 'Failed to fetch invoices' });
+    }
+});
 module.exports = router;

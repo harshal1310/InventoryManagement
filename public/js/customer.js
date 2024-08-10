@@ -1,10 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Sample customers data
     const customers = [
-        { id: 'C001', name: 'John Doe', address: '123 Main St', city: 'New York', mobile: '9428066222', email: 'john.doe@example.com', enrollmentDate: '2024-07-20', enrolledBy: 'Admin', totalOrders: 10 },
-        { id: 'C002', name: 'Jane Smith', address: '456 Elm St', city: 'Los Angeles', mobile: '9876543210', email: 'jane.smith@example.com', enrollmentDate: '2024-07-21', enrolledBy: 'User 1', totalOrders: 5 },
-        { id: 'C003', name: 'Michael Johnson', address: '789 Oak St', city: 'Chicago', mobile: '9999999999', email: 'michael.johnson@example.com', enrollmentDate: '2024-07-22', enrolledBy: 'User 2', totalOrders: 15 },
-    ];
+       ];
 
     const customerList = document.getElementById('customer-list');
 

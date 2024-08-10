@@ -14,7 +14,7 @@
             <li><a href="dashboard">Dashboard</a></li>
             <li><a href="customers">Customers</a></li>
             <li><a href="products">Products</a></li>
-            <li><a href="#">Reports</a></li>
+            <li><a href="invoices">Invoices</a></li>
             
             <li>
                 <a href="#">Order</a>
@@ -167,12 +167,24 @@
                 <label for="quantity">Quantity:</label>
                 <input type="number" class="quantity-input" value="1">
                 <label for="price">Unit Price:</label>
-                <input type="number" class="price-input" value="0.00">
+                <input type="number" class="price-input" value="0">
                 <label for="amount">Amount:</label>
-                <input type="number" class="amount-input" value="0.00" readonly>
+                <input type="number" class="amount-input" value="0" readonly>
                 <button type="button" class="delete-product-btn" onclick="deleteProductRow(this)">Delete</button>
             `;
             productRows.appendChild(productRow);
+
+            var quantityInput = productRow.querySelector('.quantity-input');
+    var priceInput = productRow.querySelector('.price-input');
+    var amountInput = productRow.querySelector('.amount-input');
+
+    quantityInput.addEventListener('input', function() {
+        updateAmount(quantityInput, priceInput, amountInput);
+    });
+
+    priceInput.addEventListener('input', function() {
+        updateAmount(quantityInput, priceInput, amountInput);
+    });
         }
 
         function deleteProductRow(button) {
@@ -185,6 +197,42 @@
             productRows.innerHTML = '';
             addNewProductRow();
         }
+
+function updateAmount(quantityInput, priceInput, amountInput) {
+    var quantity = parseFloat(quantityInput.value) || 0;
+    var price = parseFloat(priceInput.value) || 0;
+    if (quantity < 0) {
+        alert("Quantity cannot be less than 0. Setting it to 0.");
+        quantity = 0;
+        quantityInput.value = quantity;
+    }
+
+    if (price < 0) {
+        alert("Unit price cannot be less than 0. Setting it to 0.");
+        price = 0;
+        priceInput.value = price;
+    }
+    var amount = quantity * price;
+    amountInput.value = amount.toFixed(2);
+    updateTotals();
+}
+
+function updateTotals() {
+    var subtotal = 0;
+    var productRows = document.querySelectorAll('.product-row');
+    productRows.forEach(function(row) {
+        var amountInput = row.querySelector('.amount-input');
+        subtotal += parseFloat(amountInput.value) || 0;
+    });
+    document.getElementById('subtotal').value = subtotal.toFixed(2);
+
+    // Calculate tax, total amount, etc. based on the updated subtotal
+    var tax = subtotal * 0.07; // Example: 7% tax
+    document.getElementById('tax').value = tax.toFixed(2);
+
+    var total = subtotal + tax;
+    document.getElementById('total').value = total.toFixed(2);
+}
 
         function setDateTimeInputs() {
             const now = new Date();
