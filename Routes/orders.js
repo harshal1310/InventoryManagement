@@ -15,7 +15,7 @@ async function queryDatabase(query, params = []) {
         throw new Error(error);
     }
 }
-
+/*
 // Route to save an order
 router.post('/saveOrder', async (req, res) => {
     console.log("Received save order request");
@@ -92,6 +92,101 @@ router.post('/saveOrder', async (req, res) => {
             VALUES ${products.map((_, i) => `($1, $2, $3, $${i + 4})`).join(', ')}
         `;
         const itemValues = products.flatMap(product => [product.name, product.quantity, product.price, orderId]);
+
+        if (products.length > 0) {
+            await queryDatabase(itemQuery, itemValues);
+        }
+
+        res.status(200).json({ message: 'Order and items saved successfully', orderId });
+    } catch (error) {
+        console.error('Error saving order:', error);
+        res.status(500).json({ message: 'Failed to save order', error: error.message });
+    }
+});
+*/
+
+
+// Route to save an order
+router.post('/saveOrder', async (req, res) => {
+    console.log("Received save order request");
+
+    const companyId = parseInt(req.user.companyId);
+    const {
+        customer_id,
+        branch,
+        service,
+        type,
+        products = [], // Array of product objects with name, price, quantity
+        subtotal,
+        tax_amount,
+        total_amount,
+        pickup_charge,
+        pickup_type,
+        delivery_charge,
+        delivery_type,
+        pickup_date,
+        delivery_date
+    } = req.body;
+
+    if (!branch) return res.status(500).json({ message: 'Please Add Branch' });
+
+    try {
+        // Check if customer exists
+        const checkQuery = `SELECT * FROM customers WHERE mobile = $1 AND company_id = $2`;
+        const customerResults = await queryDatabase(checkQuery, [customer_id, companyId]);
+
+        if (customerResults.length < 1) {
+            console.log("Customer not present");
+            return res.status(400).json({ message: 'Customer not present' });
+        }
+
+        // Validate branch
+        const branchQuery = `SELECT branch_id FROM branches WHERE branch_name = $1 AND company_id = $2`;
+        const branchResults = await queryDatabase(branchQuery, [branch, companyId]);
+
+        if (branchResults.length === 0) {
+            return res.status(404).json({ message: 'Branch not found' });
+        }
+
+        const branchId = branchResults[0].branch_id;
+
+        // Insert order
+        const orderQuery = `
+            INSERT INTO orders (
+                branch_id, customer_mobile, service, type, subtotal, tax_amount, total_amount, pickup_charge, pickup_type,
+                delivery_charge, delivery_type, pickup_date, delivery_date
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING order_id
+        `;
+        const orderValues = [
+            branchId,
+            customer_id,
+            service,
+            type,
+            subtotal,
+            tax_amount,
+            total_amount,
+            pickup_charge,
+            pickup_type,
+            delivery_charge,
+            delivery_type,
+            pickup_date,
+            delivery_date
+        ];
+        const orderResults = await queryDatabase(orderQuery, orderValues);
+        const orderId = orderResults[0].order_id;
+        console.log("Saving order items...");
+
+        // Insert items
+        let itemQuery = `INSERT INTO order_items (product_name, quantity, unit_price, order_id) VALUES `;
+        const itemValues = [];
+        products.forEach((product, i) => {
+            const valueIndex = i * 4 + 1;
+            itemQuery += `($${valueIndex}, $${valueIndex + 1}, $${valueIndex + 2}, $${valueIndex + 3}), `;
+            itemValues.push(product.name, product.quantity, product.price, orderId);
+        });
+
+        // Remove the trailing comma and space
+        itemQuery = itemQuery.slice(0, -2);
 
         if (products.length > 0) {
             await queryDatabase(itemQuery, itemValues);

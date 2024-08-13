@@ -24,14 +24,21 @@ if (!fs.existsSync(invoicesDir)) {
     fs.mkdirSync(invoicesDir, { recursive: true });
 }
 
+
 router.post('/generateInvoice', async (req, res) => {
     const { orderId, mobile, pickupDate, deliveryDate, service, totalAmount } = req.body;
     const companyId = req.user.companyId;
 
     try {
         // Fetch order items from the database
-        const orderItemsQuery = 'SELECT * FROM order_items WHERE order_id = $1';
-        const orderItemsResult = await pool.query(orderItemsQuery, [orderId]);
+        const orderItemsQuery = `
+            SELECT oi.*, oi.product_name
+            FROM order_items oi
+            JOIN orders o ON oi.order_id = o.order_id
+            JOIN branches b ON o.branch_id = b.branch_id
+            WHERE oi.order_id = $1 AND b.company_id = $2
+        `;
+        const orderItemsResult = await pool.query(orderItemsQuery, [orderId, companyId]);
         const orderItems = orderItemsResult.rows;
 
         // Validate and default the totalAmount if undefined
@@ -60,6 +67,7 @@ router.post('/generateInvoice', async (req, res) => {
                 // Update the order to indicate that the invoice has been generated
                 const updateOrderSql = 'UPDATE orders SET invoice_generated = 1 WHERE order_id = $1';
                 await pool.query(updateOrderSql, [orderId]);
+                console.log("invoice generated succesfully")
 
                 res.status(200).json({ success: true, message: 'Invoice generated successfully', filePath: `/invoices/Invoice-${orderId}.pdf` });
             } catch (err) {
@@ -68,6 +76,7 @@ router.post('/generateInvoice', async (req, res) => {
             }
         });
 
+        // Invoice Title
         doc.fontSize(28).fillColor('#c76334').text('PROFORMA INVOICE', { align: 'center' });
         doc.moveDown();
 
@@ -100,17 +109,17 @@ router.post('/generateInvoice', async (req, res) => {
 
         // Table Header with adjusted margins and alignment
         const startX = 50;
-        const descriptionX = 150;  // Moved slightly to the right
-        const qtyX = 320;          // Aligned to be visible on screen
-        const rateX = 400;         // Moved slightly to the right
-        const amountX = 480;       // Moved to the right edge
+        const descriptionX = 90;  // Item description starts here
+        const qtyX = 110;          // Quantity column position
+        const rateX = 140;         // Rate column position
+        const amountX = 180;       // Amount column position
 
         doc.fillColor('#c76334').fontSize(12)
             .text('#', startX, doc.y, { continued: true })
             .text('Item & Description', descriptionX, doc.y, { continued: true })
             .text('Qty', qtyX, doc.y, { align: 'center', continued: true })
-            .text('Rate', rateX, doc.y, { align: 'right', continued: true })
-            .text('Amount', amountX, doc.y, { align: 'right' });
+            .text('Rate', rateX, doc.y, { align: 'center', continued: true })
+            .text('Amount', amountX, doc.y, { align: 'center' });
 
         doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke('#c76334'); // Horizontal line
         doc.moveDown(0.5);
@@ -127,8 +136,8 @@ router.post('/generateInvoice', async (req, res) => {
                 .text(itemNumber++, startX, doc.y, { continued: true })
                 .text(item.product_name, descriptionX, doc.y, { continued: true })
                 .text(item.quantity.toString(), qtyX, doc.y, { align: 'center', continued: true })
-                .text(unitPriceFormatted, rateX, doc.y, { align: 'right', continued: true })
-                .text(totalPriceFormatted, amountX, doc.y, { align: 'right' });
+                .text(unitPriceFormatted, rateX, doc.y, { align: 'center', continued: true })
+                .text(totalPriceFormatted, amountX, doc.y, { align: 'center' });
             doc.moveDown(1);
         });
 
@@ -157,7 +166,6 @@ router.post('/generateInvoice', async (req, res) => {
         res.status(500).json({ success: false, message: 'Error generating invoice' });
     }
 });
-
 router.get('/invoices/:fileName', (req, res) => {
     const filePath = path.join(invoicesDir, req.params.fileName);
     res.sendFile(filePath);
@@ -187,19 +195,23 @@ router.get('/getInvoice/:orderId', async (req, res) => {
 
 router.get('/getinvoices', async (req, res) => {
     console.log("in voces")
+    const companyId = req.user.companyId
     try {
         const invoices = await pool.query(
-            `SELECT o.order_id AS invoiceNumber,o.customer_mobile AS Number, 
-                    c.name AS customer, 
-                    o.delivery_date AS date, 
-                    o.total_amount AS amount, 
-                    o.order_status AS orderStatus, 
-                    o.payment_status AS paymentStatus 
-             FROM orders o 
-             JOIN customers c ON o.customer_mobile = c.mobile 
-             ORDER BY o.order_id DESC LIMIT 10`
+            `SELECT o.order_id AS invoiceNumber,
+            o.customer_mobile AS Number, 
+            c.name AS customer, 
+            o.delivery_date AS date, 
+            o.total_amount AS amount, 
+            o.order_status AS orderStatus, 
+            o.payment_status AS paymentStatus 
+     FROM orders o 
+     JOIN customers c ON o.customer_mobile = c.mobile 
+     JOIN branches b ON o.branch_id = b.branch_id 
+     WHERE b.company_id = $1 
+     ORDER BY o.order_id DESC`,
+    [companyId]             
         );
-        console.log(invoices.rows)
         res.status(201).json(invoices.rows);
     } catch (error) {
         console.error('Error fetching invoices:', error);

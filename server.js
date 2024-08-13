@@ -32,9 +32,12 @@ app.use(cookieParser());
 
 // Serve static files (HTML, CSS, JavaScript)
 
-app.get('/', (req, res) => {
+app.get('/',  (req, res) => {
     // Redirect to signup if no
     console.log("in")
+    
+        
+        
     const token = req.cookies.token;
 
     if (!token) {

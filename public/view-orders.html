@@ -130,7 +130,7 @@
                 const createInvoiceCell = document.querySelector(`#invoice-${orderId}`);
                 const invoiceFileName = data.filePath;
                 const invoiceRoute = "/api" + invoiceFileName;
-                createInvoiceCell.innerHTML = `<a href="${invoiceRoute}" target="_blank">${orderId}</a>`;
+                createInvoiceCell.innerHTML = `<a href="${invoiceRoute}" target="_blank">View Invoice</a>`;
             } else {
                 console.error('Failed to update invoice_generated field:', data.message);
             }
@@ -255,4 +255,3 @@
 
 </body>
 </html>
-
